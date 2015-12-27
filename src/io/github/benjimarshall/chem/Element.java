@@ -23,7 +23,7 @@ public class Element {
         boolean successful = false;
         if (flag == SYMBOL) {
             for (Element element : periodicTable) {
-                if (element.getSymbol() == name) {
+                if (element.getSymbol().equals(name)) {
                     this.symbol = element.getSymbol();
                     this.name = element.getName();
                     this.atomicNumber = element.getAtomicNumber();
@@ -35,7 +35,7 @@ public class Element {
         }
         else if (flag == NAME) {
             for (Element element : periodicTable) {
-                if (element.getName() == name) {
+                if (element.getName().equals(name)) {
                     this.symbol = element.getSymbol();
                     this.name = element.getName();
                     this.atomicNumber = element.getAtomicNumber();
@@ -44,6 +44,10 @@ public class Element {
                     break;
                 }
             }
+        }
+
+        if (!successful) {
+            // Error
         }
 
     }
