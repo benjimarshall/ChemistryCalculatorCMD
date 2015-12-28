@@ -19,7 +19,7 @@ public class Element {
         this.massNumber = element.getMassNumber();
     }
 
-    public Element(String name, int flag) {
+    public Element(String name, int flag) throws FlagException, NotationInterpretationException {
         boolean successful = false;
         if (flag == SYMBOL) {
             for (Element element : periodicTable) {
@@ -45,9 +45,12 @@ public class Element {
                 }
             }
         }
+        else {
+            throw new FlagException("Flag was neither 0 nor 1, neither SYMBOL nor NAME");
+        }
 
         if (!successful) {
-            // Error
+            throw new NotationInterpretationException("Couldn't find element or symbol in the periodic table");
         }
 
     }
