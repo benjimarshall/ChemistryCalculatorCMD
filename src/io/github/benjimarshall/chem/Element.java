@@ -1,7 +1,6 @@
 package io.github.benjimarshall.chem;
 
 import com.opencsv.CSVReader;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,6 +11,7 @@ public class Element {
 
     }
 
+    // Make deep copy
     public Element(Element element) {
         this.symbol = element.getSymbol();
         this.name = element.getName();
@@ -19,42 +19,56 @@ public class Element {
         this.massNumber = element.getMassNumber();
     }
 
+    // Find the element in the periodic table based on symbol or name
     public Element(String name, int flag) throws FlagException, NotationInterpretationException {
+        // One way flag to see if the element is found in the periodic table or not
         boolean successful = false;
+
         if (flag == SYMBOL) {
+            // Loop through the periodic table
             for (Element element : periodicTable) {
-                if (element.getSymbol().equals(name)) {
+                if (element.getSymbol().equals(name)) { // If the name and symbol match
+                    // Copy across the data from the element
                     this.symbol = element.getSymbol();
                     this.name = element.getName();
                     this.atomicNumber = element.getAtomicNumber();
                     this.massNumber = element.getMassNumber();
+
+                    // Note that the element has been found, and don't bother with the rest of the table
                     successful = true;
                     break;
                 }
             }
         }
         else if (flag == NAME) {
+            // Loop through the periodic table
             for (Element element : periodicTable) {
-                if (element.getName().equals(name)) {
+                if (element.getName().equals(name)) { // If the name and element's name match
+                    // Copy across the data from the element
                     this.symbol = element.getSymbol();
                     this.name = element.getName();
                     this.atomicNumber = element.getAtomicNumber();
                     this.massNumber = element.getMassNumber();
+
+                    // Note that the element has been found, and don't bother with the rest of the table
                     successful = true;
                     break;
                 }
             }
         }
+        // If the flag doesn't equal SYMBOL or NAME
         else {
             throw new FlagException("Flag was neither 0 nor 1, neither SYMBOL nor NAME");
         }
 
+        // If the flag was valid but no element was found to match the "name" variable
         if (!successful) {
             throw new NotationInterpretationException("Couldn't find element or symbol in the periodic table");
         }
 
     }
 
+    // Specify each field for the element object
     public Element(String symbol, String name, int atomicNumber, double massNumber) {
         this.symbol = symbol;
         this.name = name;
@@ -62,6 +76,7 @@ public class Element {
         this.massNumber = massNumber;
     }
 
+    // Getters for the Element
     public String getSymbol() {
         return symbol;
     }
@@ -78,13 +93,15 @@ public class Element {
         return atomicNumber;
     }
 
-    private String symbol;
-    private String name;
-    private double massNumber;
-    private int atomicNumber;
+    // Fields of the class
+    private String symbol;      // Eg. Na
+    private String name;        // Eg. Sodium
+    private double massNumber;  // Eg. 22.9898...
+    private int atomicNumber;   // Eg. 11
 
-    public final static int SYMBOL = 0;
-    public final static int NAME = 1;
+    // Flags for constructors
+    public static final int SYMBOL = 0;
+    public static final int NAME = 1;
 
     // Make the periodic table
     private static ArrayList<Element> periodicTable = new ArrayList<>();
@@ -108,6 +125,7 @@ public class Element {
             }
             r.close();
         }
+        // Catch the checked IOException which could be throw by the CSVReader
         catch (IOException e) {
             System.out.println("There has been an IO error in reading the periodic table. Program closing");
             System.exit(1);
