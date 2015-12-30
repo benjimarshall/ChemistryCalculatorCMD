@@ -14,7 +14,7 @@ public class Main {
             Element e = new Element("Sodium", Element.NAME);
             System.out.println(e.getSymbol() + " " + e.getName() + " " + e.getAtomicNumber() + " " + e.getMassNumber());
             Molecule molecule = new Molecule("Ca1C1O3");
-            for (HashMap.Entry<Element, Integer> entry : molecule.getElementList().entrySet()) {
+            for (HashMap.Entry<Element, Integer> entry : molecule.getElementMap().entrySet()) {
                 System.out.println(entry.getKey().getName() + ": " + entry.getValue());
             }
             System.out.println(molecule.getRelativeFormulaMass());
