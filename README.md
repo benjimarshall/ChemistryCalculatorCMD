@@ -1,4 +1,4 @@
 # ChemistryCalculatorCMD
-A Quantitative Chemistry Calculator and API (eventually)
+A Quantitative Chemistry Calculator and Library (eventually)
 
 Benji Marshall
