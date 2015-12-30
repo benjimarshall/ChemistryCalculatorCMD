@@ -25,6 +25,12 @@ public class Element {
         boolean successful = false;
 
         if (flag == SYMBOL) {
+            // Check if the name looks valid
+            if (!name.matches("[A-Z][a-z]?")) {
+                throw new NotationInterpretationException("Symbol did not meet notation standards of capital letters " +
+                        "and lower case letters");
+            }
+
             // Loop through the periodic table
             for (Element element : periodicTable) {
                 if (element.getSymbol().equals(name)) { // If the name and symbol match
@@ -42,8 +48,9 @@ public class Element {
         }
         else if (flag == NAME) {
             // Loop through the periodic table
+            name = name.toLowerCase();
             for (Element element : periodicTable) {
-                if (element.getName().equals(name)) { // If the name and element's name match
+                if (element.getName().toLowerCase().equals(name)) { // If the name and element's name match
                     // Copy across the data from the element
                     this.symbol = element.getSymbol();
                     this.name = element.getName();

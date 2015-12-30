@@ -8,7 +8,11 @@ public class Molecule {
     }
 
     public Molecule(String formula) throws NotationInterpretationException {
-        // NEED A RAZOR FOR SYMBOLS AS DOES ELEMENT FOR SYMBOLS AND NUMBERS AND MULTIPLE CAPS
+        if (!formula.matches("([A-Z][a-z]?\\d*)*")) {
+            throw new NotationInterpretationException("Formula did meet notations standards of capital letters, lower" +
+                    "case letters and numbers");
+        }
+
         this.formula = formula;
         String[] stringElements = this.formula.split("(?=\\p{Upper})");
         String[] stringPart = {null, null};
