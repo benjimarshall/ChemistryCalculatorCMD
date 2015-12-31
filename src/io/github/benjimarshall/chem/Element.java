@@ -28,7 +28,7 @@ public class Element {
             // Check if the name looks valid
             if (!name.matches("[A-Z][a-z]?")) {
                 throw new NotationInterpretationException("Symbol did not meet notation standards of capital letters " +
-                        "and lower case letters");
+                        "and lower case letters: " + name);
             }
 
             // Loop through the periodic table
@@ -90,11 +90,10 @@ public class Element {
 
         Element element = (Element) o;
 
-        if (Double.compare(element.getMassNumber(), getMassNumber()) != 0) return false;
-        if (getAtomicNumber() != element.getAtomicNumber()) return false;
-        if (!getSymbol().equals(element.getSymbol())) return false;
-        return getName().equals(element.getName());
-
+        return Double.compare(element.getMassNumber(), getMassNumber()) == 0 &&
+                getAtomicNumber() == element.getAtomicNumber() &&
+                getSymbol().equals(element.getSymbol()) &&
+                getName().equals(element.getName());
     }
 
     @Override
