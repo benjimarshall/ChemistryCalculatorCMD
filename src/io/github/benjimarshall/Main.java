@@ -9,18 +9,19 @@ import java.util.HashMap;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello World");
         try {
             Element e = new Element("Sodium", Element.NAME);
             Element e2 = new Element("Sodium", Element.NAME);
-            System.out.println(e.equals(e2));
-            System.out.println(e.getSymbol() + " " + e.getName() + " " + e.getAtomicNumber() + " " + e.getMassNumber());
-            Molecule molecule = new Molecule("C2H5OH");
-            System.out.println(e.equals(molecule));
+            System.out.println("Two elements constructed from \"Sodium\" through .equals(): " + e.equals(e2));
+            System.out.println("Element generated from \"Sodium\": " + e.getSymbol() + " " + e.getName() + " " +
+                    e.getAtomicNumber() + " " + e.getMassNumber());
+
+            Molecule molecule = new Molecule("Al2(CO3)3");
+            System.out.println("Molecule from: \"Al2(CO3)3\"");
             for (HashMap.Entry<Element, Integer> entry : molecule.getElementMap().entrySet()) {
                 System.out.println(entry.getKey().getName() + ": " + entry.getValue());
             }
-            System.out.println(molecule.getRelativeFormulaMass());
+            System.out.println("RFM: " + molecule.getRelativeFormulaMass());
         }
         catch (FlagException | NotationInterpretationException e) {
             System.out.println("Something went wrong: " + e.getMessage());
