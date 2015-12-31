@@ -83,6 +83,32 @@ public class Element {
         this.massNumber = massNumber;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Element element = (Element) o;
+
+        if (Double.compare(element.getMassNumber(), getMassNumber()) != 0) return false;
+        if (getAtomicNumber() != element.getAtomicNumber()) return false;
+        if (!getSymbol().equals(element.getSymbol())) return false;
+        return getName().equals(element.getName());
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = getSymbol().hashCode();
+        result = 31 * result + getName().hashCode();
+        temp = Double.doubleToLongBits(getMassNumber());
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + getAtomicNumber();
+        return result;
+    }
+
     // Getters for the Element
     public String getSymbol() {
         return symbol;
