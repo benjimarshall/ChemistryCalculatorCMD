@@ -12,8 +12,11 @@ public class Main {
         System.out.println("Hello World");
         try {
             Element e = new Element("Sodium", Element.NAME);
+            Element e2 = new Element("Sodium", Element.NAME);
+            System.out.println(e.equals(e2));
             System.out.println(e.getSymbol() + " " + e.getName() + " " + e.getAtomicNumber() + " " + e.getMassNumber());
-            Molecule molecule = new Molecule("Ca1C1O3");
+            Molecule molecule = new Molecule("C2H5OH");
+            System.out.println(e.equals(molecule));
             for (HashMap.Entry<Element, Integer> entry : molecule.getElementMap().entrySet()) {
                 System.out.println(entry.getKey().getName() + ": " + entry.getValue());
             }

@@ -25,14 +25,31 @@ public class Molecule {
         String[] stringElements = this.formula.split("(?=\\p{Upper})");
 
         // An array to temporarily store the symbol and quantity of each element
-        String[] stringPart = {null, null};
+        String[] stringParts = {null, null};
+        int quantity;
         try {
             // Loop through the list of elements
             for (String stringElement : stringElements) {
                 // Split the element into its symbol and quantity
-                stringPart = stringElement.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
+                stringParts = stringElement.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
+                // If the one is implicit, like carbon in CO2, then assign the quantity as one
+                if (stringParts.length == 1) {
+                    quantity = 1;
+                }
+                else {
+                    quantity = Integer.parseInt(stringParts[1]);
+                }
+
                 // Feed the symbol and quantity into the element map
-                this.elementMap.put(new Element(stringPart[0], Element.SYMBOL), Integer.parseInt(stringPart[1]));
+                // If the element has already been entered, increment the quantity
+                if (this.elementMap.containsKey(new Element(stringParts[0], Element.SYMBOL))) {
+                    this.elementMap.put(new Element(stringParts[0], Element.SYMBOL),
+                            this.elementMap.get(new Element(stringParts[0], Element.SYMBOL)) + quantity);
+                }
+                // Else if the element hasn't already been entered, enter it with its current quantity
+                else {
+                    this.elementMap.put(new Element(stringParts[0], Element.SYMBOL), quantity);
+                }
             }
 
             // Calculate the relative formula mass by adding up the relative masses multiplied by the number of atoms
@@ -45,7 +62,7 @@ public class Molecule {
             System.out.println("Add unexpected flag exception occurred: " + e.getMessage());
         }
         catch (NotationInterpretationException e) {
-            throw new NotationInterpretationException(e.getMessage() + ": " + stringPart[0]);
+            throw new NotationInterpretationException(e.getMessage() + ": " + stringParts[0]);
         }
         catch (IndexOutOfBoundsException e) {
             throw new NotationInterpretationException("Capital letter expected after number");
