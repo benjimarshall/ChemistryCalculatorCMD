@@ -153,6 +153,11 @@ public class Molecule {
         return s.replaceAll("[^\\(]", "").length() == s.replaceAll("[^\\)]", "").length();
     }
 
+    @Override
+    public String toString() {
+        return getFormula();
+    }
+
     // Getters for the molecule
     public String getFormula() {
         return formula;
