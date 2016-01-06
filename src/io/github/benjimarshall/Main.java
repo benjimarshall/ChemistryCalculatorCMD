@@ -1,9 +1,6 @@
 package io.github.benjimarshall;
 
-import io.github.benjimarshall.chem.Element;
-import io.github.benjimarshall.chem.FlagException;
-import io.github.benjimarshall.chem.Molecule;
-import io.github.benjimarshall.chem.NotationInterpretationException;
+import io.github.benjimarshall.chem.*;
 
 import java.util.HashMap;
 
@@ -22,6 +19,10 @@ public class Main {
                 System.out.println(entry.getKey().getName() + ": " + entry.getValue());
             }
             System.out.println("RFM: " + molecule.getRelativeFormulaMass());
+
+            Equation equation = new Equation("C2H6 + O2 -> CO2 + H2O");
+            Equation equation2 = new Equation("N2 + 3H2 -> 2NH3");
+            Equation equation3 = new Equation("C + O2 -> CO2");
         }
         catch (FlagException | NotationInterpretationException e) {
             System.out.println("Something went wrong: " + e.getMessage());
