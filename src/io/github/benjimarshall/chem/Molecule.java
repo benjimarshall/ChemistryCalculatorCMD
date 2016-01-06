@@ -154,6 +154,33 @@ public class Molecule {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Molecule molecule = (Molecule) o;
+
+        for (HashMap.Entry<Element, Integer> elementEntry : this.elementMap.entrySet()) {
+            if (!((Molecule) o).getElementMap().get(elementEntry.getKey()).equals(elementEntry.getValue())) {
+                return false;
+            }
+        }
+
+        return Double.compare(molecule.getRelativeFormulaMass(), getRelativeFormulaMass()) == 0 &&
+                getFormula().equals(molecule.getFormula());
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = getFormula().hashCode();
+        temp = Double.doubleToLongBits(getRelativeFormulaMass());
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
     public String toString() {
         return getFormula();
     }
