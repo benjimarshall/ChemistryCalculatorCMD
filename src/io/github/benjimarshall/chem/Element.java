@@ -7,9 +7,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class Element {
-    public Element() {
+    private Element() {
 
-    }
+    };
 
     // Make deep copy
     public Element(Element element) {
