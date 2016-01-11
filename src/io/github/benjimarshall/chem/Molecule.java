@@ -1,9 +1,10 @@
 package io.github.benjimarshall.chem;
 
 import java.util.HashMap;
+import java.util.Set;
 
 public class Molecule {
-    public Molecule() {
+    private Molecule() {
 
     }
 
@@ -149,7 +150,7 @@ public class Molecule {
         return s.replaceAll("[^\\(\\)]", "").length();
     }
 
-    public static boolean isMatchingNumberOfBrackets(String s) {
+    private static boolean isMatchingNumberOfBrackets(String s) {
         return s.replaceAll("[^\\(]", "").length() == s.replaceAll("[^\\)]", "").length();
     }
 
@@ -161,7 +162,8 @@ public class Molecule {
         Molecule molecule = (Molecule) o;
 
         for (HashMap.Entry<Element, Integer> elementEntry : this.elementMap.entrySet()) {
-            if (!((Molecule) o).getElementMap().get(elementEntry.getKey()).equals(elementEntry.getValue())) {
+            Integer quantity = ((Molecule) o).getElementMap().get(elementEntry.getKey());
+            if (quantity == null || !quantity.equals(elementEntry.getValue())) {
                 return false;
             }
         }
@@ -183,6 +185,18 @@ public class Molecule {
     @Override
     public String toString() {
         return getFormula();
+    }
+
+    public boolean contains(Element element) {
+        return elementMap.containsKey(element);
+    }
+
+    public Set<Element> getElements() {
+        return elementMap.keySet();
+    }
+
+    public int getElementQuantity(Element element) {
+        return contains(element) ? elementMap.get(element) : 0;
     }
 
     // Getters for the molecule

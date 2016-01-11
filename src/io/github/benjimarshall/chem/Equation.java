@@ -1,7 +1,8 @@
 package io.github.benjimarshall.chem;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import org.apache.commons.lang3.math.Fraction;
+
+import java.util.*;
 
 public class Equation {
     public Equation(String equation) throws NotationInterpretationException {
@@ -26,10 +27,18 @@ public class Equation {
         this.reactants = makeChemicalMap(equationSides[0]);
         this.products = makeChemicalMap(equationSides[1]);
 
+
+        if (!isElementsPresent(reactants, products)) {
+            throw new NotationInterpretationException("There are different elements on either side of the reaction");
+        }
+
         System.out.println("Is balanced: " + isBalanced(this.reactants, this.products));
+        balance(this.reactants, this.products);
+        System.out.println(isBalanced(this.reactants, this.products));
     }
 
-    private static HashMap<Molecule, Integer> makeChemicalMap(String equationSide) throws NotationInterpretationException {
+    private static HashMap<Molecule, Integer> makeChemicalMap(String equationSide)
+            throws NotationInterpretationException {
         // The map of chemicals to be returned
         HashMap<Molecule, Integer> chemicals = new HashMap<>();
         // A temporary variable for each chemicals amount
@@ -78,24 +87,33 @@ public class Equation {
         return chemicals;
     }
 
-    private static boolean isBalanced(HashMap<Molecule, Integer> reactants, HashMap<Molecule, Integer> products) {
-        // Break out function so it makes an elementMap for each side
-        try {
-            HashMap<Element, Integer> reactantElementMap = makeElementMap(reactants);
-            HashMap<Element, Integer> productElementMap = makeElementMap(products);
+    private static boolean isElementsPresent(HashMap<Molecule, Integer> reactants, HashMap<Molecule, Integer> products) {
+        HashMap<Element, Integer> reactantElementMap = makeElementMap(reactants);
+        HashMap<Element, Integer> productElementMap = makeElementMap(products);
 
-            if (reactantElementMap.size() != productElementMap.size()) {
+        if (reactantElementMap.size() != productElementMap.size()) {
+            return false;
+        }
+
+        for (HashMap.Entry<Element, Integer> reactant: reactantElementMap.entrySet()) {
+            if (!productElementMap.containsKey(reactant.getKey())) {
                 return false;
             }
-
-            for (HashMap.Entry<Element, Integer> elementEntry : reactantElementMap.entrySet()) {
-                if (!productElementMap.get(elementEntry.getKey()).equals(elementEntry.getValue())) {
-                    return false;
-                }
-            }
         }
-        catch (NullPointerException e) {
-            return false;
+
+        return true;
+    }
+
+    private static boolean isBalanced(HashMap<Molecule, Integer> reactants, HashMap<Molecule, Integer> products) {
+        // Make a map of elements and quantities for each side of the reaction
+        HashMap<Element, Integer> reactantElementMap = makeElementMap(reactants);
+        HashMap<Element, Integer> productElementMap = makeElementMap(products);
+
+        // Iterate over each element and see if the quantities are the same on both sides
+        for (HashMap.Entry<Element, Integer> elementEntry : reactantElementMap.entrySet()) {
+            if (!productElementMap.get(elementEntry.getKey()).equals(elementEntry.getValue())) {
+                return false;
+            }
         }
         return true;
     }
@@ -105,16 +123,16 @@ public class Equation {
         // For every value in the reactants
         for (HashMap.Entry<Molecule, Integer> molecule: moleculeMap.entrySet()) {
             // Break the molecule up into individual elements
-            for (HashMap.Entry<Element, Integer> elementEntry: molecule.getKey().getElementMap().entrySet()) {
+            for (Element element: molecule.getKey().getElements()) {
                 // If the element is already present, add to it
-                if (elementMap.containsKey(elementEntry.getKey())) {
-                    elementMap.put(elementEntry.getKey(),
-                            elementMap.get(elementEntry.getKey())
-                                    + (elementEntry.getValue() * molecule.getValue()));
+                if (elementMap.containsKey(element)) {
+                    elementMap.put(element,
+                            elementMap.get(element)
+                                    + (molecule.getKey().getElementQuantity(element) * molecule.getValue()));
                 }
                 // If the element is not present, make a new entry with the element and its quantity
                 else {
-                    elementMap.put(elementEntry.getKey(), elementEntry.getValue() * molecule.getValue());
+                    elementMap.put(element, molecule.getKey().getElementQuantity(element) * molecule.getValue());
                 }
             }
         }
@@ -122,8 +140,214 @@ public class Equation {
         return elementMap;
     }
 
-    private ArrayList<Integer> balance(String equation) {
-        return null;
+    private void balance(HashMap<Molecule, Integer> reactants, HashMap<Molecule, Integer> products)
+            throws NotationInterpretationException {
+        Set<Element> elementSet = makeElementMap(reactants).keySet();
+
+        // Make maps of the coefficients, for molecules and for the fractional value of the coefficients
+        HashMap<String, Molecule> moleculeCoefficients = new HashMap<>();
+        HashMap<String, Fraction> coefficentFractionValue = new HashMap<>();
+
+        // A coefficient name generator
+        AlphabeticSequence as = new AlphabeticSequence();
+        // A temporary variable because each name can only be called once
+        String coefficientString;
+
+        // Generate the maps for the reactants
+        for (HashMap.Entry<Molecule, Integer> moleculeEntry: reactants.entrySet()) {
+            coefficientString = as.next();
+            moleculeCoefficients.put(coefficientString, moleculeEntry.getKey());
+            coefficentFractionValue.put(coefficientString, Fraction.getFraction(0));
+        }
+
+        String middle = as.next();
+
+        // Continue to generate the maps now using the products
+        for (HashMap.Entry<Molecule, Integer> moleculeEntry: products.entrySet()) {
+            coefficientString = as.next();
+            moleculeCoefficients.put(coefficientString, moleculeEntry.getKey());
+            coefficentFractionValue.put(coefficientString, Fraction.getFraction(0));
+        }
+
+        // Generate the algebraic equations
+        ArrayList<AlgebraicEquation> algEquations = new ArrayList<>();
+        String equation;
+        // Generate the equation
+        for (Element element: elementSet) {
+            equation = "";
+            // For each reactant
+            for (HashMap.Entry<Molecule, Integer> moleculeEntry: reactants.entrySet()) {
+                // If the element is present in this molecule
+                if (moleculeEntry.getKey().contains(element)) {
+                    // Get the variable name of the molecule
+                    for (HashMap.Entry<String, Molecule> coefficientEntry: moleculeCoefficients.entrySet()) {
+                        // Check if the molecule in the coefficient entry is the molecule being searched for
+                        if (coefficientEntry.getKey().compareTo(middle) < 0 &&
+                               coefficientEntry.getValue().equals(moleculeEntry.getKey())) {
+                           // Put the coefficient and name into the equation
+
+                           // Don't append a plus if there are no other variables yet
+                           if (equation.length() != 0) {
+                               equation += "+";
+                           }
+
+                           // Append the variable and its coefficient to the equation
+                           equation += moleculeEntry.getKey().getElementQuantity(element) + coefficientEntry.getKey();
+                           break;
+                        }
+                    }
+                }
+            }
+
+            equation += "=";
+
+            // For each product
+            for (HashMap.Entry<Molecule, Integer> moleculeEntry: products.entrySet()) {
+                // If the element is present in this molecule
+                if (moleculeEntry.getKey().contains(element)) {
+                    // Get the variable name of the molecule
+                    for (HashMap.Entry<String, Molecule> coefficientEntry: moleculeCoefficients.entrySet()) {
+                        // Check if the molecule in the coefficient entry is the molecule being searched for
+                        if (coefficientEntry.getKey().compareTo(middle) > 0 &&
+                                coefficientEntry.getValue().equals(moleculeEntry.getKey())) {
+                            // Put the coefficient and name into the equation
+
+                            // Don't add a plus if the last character was equals
+                            if (equation.charAt(equation.length() - 1) != '=') {
+                                equation += "+";
+                            }
+
+                            // Append the variable and its coefficient to the equation
+                            equation += moleculeEntry.getKey().getElementQuantity(element) + coefficientEntry.getKey();
+                            break;
+                        }
+                    }
+                }
+            }
+
+            System.out.println(element.getSymbol() + " " + equation);
+
+            algEquations.add(new AlgebraicEquation(equation, AlgebraicEquation.WARN_ON_MULTIPLE_OCCURRENCES));
+        }
+
+        System.out.println("Hi");
+
+        ArrayList<String> balancedVariables;
+
+        // Find a suitable equation to start setting values
+        HashMap<String, Fraction> copyOfCoefficentFractionValue =
+                (HashMap<String, Fraction>) coefficentFractionValue.clone();
+
+        // Balancing fun:
+        for (AlgebraicEquation startingEq: algEquations) {
+            // Reset the coefficients to be 0, and empty the list of known terms
+            coefficentFractionValue = (HashMap<String, Fraction>) copyOfCoefficentFractionValue.clone();
+            balancedVariables = new ArrayList<>();
+            // If the equation doesn't have two terms, it is really not very nice to set variables for
+            if (!startingEq.hasTwoTerms()) {
+                continue;
+            }
+
+            // Grab one of the variables and let it be one
+            coefficentFractionValue.put(startingEq.getTerms().get(0), Fraction.getFraction(1));
+            balancedVariables.add(startingEq.getTerms().get(0));
+            // Solve an SSEq to find out the other value
+            coefficentFractionValue.put(startingEq.getTerms().get(1),
+                    startingEq.solveSimpleSubstitution(coefficentFractionValue, balancedVariables));
+
+            balancedVariables.add(startingEq.getTerms().get(1));
+            System.out.println(coefficentFractionValue);
+
+            // Go through the the equations, and deduce values
+            boolean doneSomethingThisTime = true;
+            boolean finished = false;
+            while (doneSomethingThisTime && !finished) {
+                doneSomethingThisTime = false;
+
+                for (AlgebraicEquation alEq : algEquations) {
+                    // ALLOW FOR SIMULTANEOUS EQUATIONS
+                    // If the equation has already been balanced, or cannot be simply substituted
+                    System.out.print(balancedVariables);
+                    if (alEq.areAllTermsKnown(balancedVariables) ||
+                            !alEq.isSolvableBySimpleSubstitution(balancedVariables)) {
+                        System.out.println("All terms known: " + alEq.getTerms() + alEq.isSolvableBySimpleSubstitution(balancedVariables));
+                        continue;
+                    }
+
+                    System.out.println("Hi");
+
+                    // Solve the simple substitution
+                    coefficentFractionValue.put(alEq.findUnknownTerms(balancedVariables).get(0),
+                            alEq.solveSimpleSubstitution(coefficentFractionValue, balancedVariables));
+                    balancedVariables.add(alEq.findUnknownTerms(balancedVariables).get(0));
+                    doneSomethingThisTime = true;
+                }
+
+                // Is finished: if (this.isBalanced())
+                if (balancedVariables.size() == this.reactants.size() + this.products.size()) {
+                    finished = true;
+
+                }
+
+            }
+
+            if (finished) {
+                break;
+            }
+        }
+
+
+
+        ArrayList<HashMap<Molecule, Integer>> sides = coefficientsToEquation(moleculeCoefficients,
+                AlgebraicEquation.simplifyCoefficients(coefficentFractionValue));
+
+        for (HashMap.Entry<Molecule, Integer> mol: sides.get(0).entrySet()) {
+            this.reactants.put(mol.getKey(), mol.getValue());
+        }
+        for (HashMap.Entry<Molecule, Integer> mol: sides.get(1).entrySet()) {
+            this.products.put(mol.getKey(), mol.getValue());
+        }
+        System.out.println();
+    }
+
+    public ArrayList<HashMap<Molecule, Integer>> coefficientsToEquation(HashMap<String, Molecule> moleculeCoefficients,
+                                                                        HashMap<String, Integer> coefficientValues) {
+        ArrayList<HashMap<Molecule, Integer>> sides = new ArrayList<>();
+        sides.add(new HashMap<>());
+
+        // Add determine each coefficient of the reactants
+        for (Molecule mol: this.reactants.keySet()) {
+            // Find the value, searching for the molecule's String name, and using it to call its value
+            for (HashMap.Entry<String, Molecule> molEntry: moleculeCoefficients.entrySet()) {
+                if (mol.equals(molEntry.getValue())) {
+                    sides.get(0).put(mol, coefficientValues.get(molEntry.getKey()));
+                    break;
+                }
+            }
+        }
+
+        sides.add(new HashMap<>());
+
+        // Add determine each coefficient of the reactants
+        for (Molecule mol: this.products.keySet()) {
+            // Find the value, searching for the molecule's String name, and using it to call its value
+            for (HashMap.Entry<String, Molecule> molEntry: moleculeCoefficients.entrySet()) {
+                if (mol.equals(molEntry.getValue())) {
+                    sides.get(1).put(mol, coefficientValues.get(molEntry.getKey()));
+                    break;
+                }
+            }
+        }
+
+        return sides;
+    }
+
+    public HashMap<Molecule, Integer> getReactants() {
+        return reactants;
+    }
+
+    public HashMap<Molecule, Integer> getProducts() {
+        return products;
     }
 
     private HashMap<Molecule, Integer> reactants = new HashMap<>();
