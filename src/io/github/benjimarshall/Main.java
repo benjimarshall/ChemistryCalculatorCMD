@@ -47,10 +47,11 @@ public class Main {
             }
             System.out.println("RFM: " + molecule.getRelativeFormulaMass());
 
-            Equation equation = new Equation("C2H6 + O2 -> CO2 + H2O + C");
             Equation equation1 = new Equation("C2H6 + O2 -> CO2 + H2O");
             Equation equation2 = new Equation("N2 + H2 -> NH3");
             Equation equation3 = new Equation("C + O2 -> CO2");
+            Equation equation = new Equation("C2H6 + O2 -> CO2 + H2O + C");
+
         }
         catch (FlagException | NotationInterpretationException e) {
             System.out.println("Something went wrong: " + e.getMessage());
