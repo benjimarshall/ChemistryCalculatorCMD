@@ -146,7 +146,7 @@ public class Equation {
 
         // Make maps of the coefficients, for molecules and for the fractional value of the coefficients
         HashMap<String, Molecule> moleculeCoefficients = new HashMap<>();
-        HashMap<String, Fraction> coefficentFractionValue = new HashMap<>();
+        HashMap<String, Fraction> coefficientFractionValue = new HashMap<>();
 
         // A coefficient name generator
         AlphabeticSequence as = new AlphabeticSequence();
@@ -157,7 +157,7 @@ public class Equation {
         for (HashMap.Entry<Molecule, Integer> moleculeEntry: reactants.entrySet()) {
             coefficientString = as.next();
             moleculeCoefficients.put(coefficientString, moleculeEntry.getKey());
-            coefficentFractionValue.put(coefficientString, Fraction.getFraction(0));
+            coefficientFractionValue.put(coefficientString, Fraction.getFraction(0));
         }
 
         String middle = as.next();
@@ -166,7 +166,7 @@ public class Equation {
         for (HashMap.Entry<Molecule, Integer> moleculeEntry: products.entrySet()) {
             coefficientString = as.next();
             moleculeCoefficients.put(coefficientString, moleculeEntry.getKey());
-            coefficentFractionValue.put(coefficientString, Fraction.getFraction(0));
+            coefficientFractionValue.put(coefficientString, Fraction.getFraction(0));
         }
 
         // Generate the algebraic equations
@@ -236,12 +236,13 @@ public class Equation {
 
         // Find a suitable equation to start setting values
         HashMap<String, Fraction> copyOfCoefficentFractionValue =
-                (HashMap<String, Fraction>) coefficentFractionValue.clone();
+                (HashMap<String, Fraction>) coefficientFractionValue.clone();
+        boolean finished = false;
 
         // Balancing fun:
         for (AlgebraicEquation startingEq: algEquations) {
             // Reset the coefficients to be 0, and empty the list of known terms
-            coefficentFractionValue = (HashMap<String, Fraction>) copyOfCoefficentFractionValue.clone();
+            coefficientFractionValue = (HashMap<String, Fraction>) copyOfCoefficentFractionValue.clone();
             balancedVariables = new ArrayList<>();
             // If the equation doesn't have two terms, it is really not very nice to set variables for
             if (!startingEq.hasTwoTerms()) {
@@ -249,65 +250,77 @@ public class Equation {
             }
 
             // Grab one of the variables and let it be one
-            coefficentFractionValue.put(startingEq.getTerms().get(0), Fraction.getFraction(1));
+            coefficientFractionValue.put(startingEq.getTerms().get(0), Fraction.getFraction(1));
             balancedVariables.add(startingEq.getTerms().get(0));
             // Solve an SSEq to find out the other value
-            coefficentFractionValue.put(startingEq.getTerms().get(1),
-                    startingEq.solveSimpleSubstitution(coefficentFractionValue, balancedVariables));
+            coefficientFractionValue.put(startingEq.getTerms().get(1),
+                    startingEq.solveSimpleSubstitution(coefficientFractionValue, balancedVariables));
 
             balancedVariables.add(startingEq.getTerms().get(1));
-            System.out.println(coefficentFractionValue);
+            System.out.println(coefficientFractionValue);
 
-            // Go through the the equations, and deduce values
-            boolean doneSomethingThisTime = true;
-            boolean finished = false;
-            while (doneSomethingThisTime && !finished) {
-                doneSomethingThisTime = false;
-
-                for (AlgebraicEquation alEq : algEquations) {
-                    // ALLOW FOR SIMULTANEOUS EQUATIONS
-                    // If the equation has already been balanced, or cannot be simply substituted
-                    System.out.print(balancedVariables);
-                    if (alEq.areAllTermsKnown(balancedVariables) ||
-                            !alEq.isSolvableBySimpleSubstitution(balancedVariables)) {
-                        System.out.println("All terms known: " + alEq.getTerms() + alEq.isSolvableBySimpleSubstitution(balancedVariables));
-                        continue;
-                    }
-
-                    System.out.println("Hi");
-
-                    // Solve the simple substitution
-                    coefficentFractionValue.put(alEq.findUnknownTerms(balancedVariables).get(0),
-                            alEq.solveSimpleSubstitution(coefficentFractionValue, balancedVariables));
-                    balancedVariables.add(alEq.findUnknownTerms(balancedVariables).get(0));
-                    doneSomethingThisTime = true;
-                }
-
-                // Is finished: if (this.isBalanced())
-                if (balancedVariables.size() == this.reactants.size() + this.products.size()) {
-                    finished = true;
-
-                }
-
-            }
+            finished = attemptToSolveChemEquation(algEquations, balancedVariables, coefficientFractionValue);
 
             if (finished) {
                 break;
             }
         }
 
+        System.out.println("Finished solving");
 
+        // Did the equation successfully balance?
+        if (finished) {
+            ArrayList<HashMap<Molecule, Integer>> sides = coefficientsToEquation(moleculeCoefficients,
+                    AlgebraicEquation.simplifyCoefficients(coefficientFractionValue));
 
-        ArrayList<HashMap<Molecule, Integer>> sides = coefficientsToEquation(moleculeCoefficients,
-                AlgebraicEquation.simplifyCoefficients(coefficentFractionValue));
-
-        for (HashMap.Entry<Molecule, Integer> mol: sides.get(0).entrySet()) {
-            this.reactants.put(mol.getKey(), mol.getValue());
+            for (HashMap.Entry<Molecule, Integer> mol : sides.get(0).entrySet()) {
+                this.reactants.put(mol.getKey(), mol.getValue());
+            }
+            for (HashMap.Entry<Molecule, Integer> mol : sides.get(1).entrySet()) {
+                this.products.put(mol.getKey(), mol.getValue());
+            }
+            System.out.println(this.reactants + "" + this.products);
         }
-        for (HashMap.Entry<Molecule, Integer> mol: sides.get(1).entrySet()) {
-            this.products.put(mol.getKey(), mol.getValue());
+        // If it didn't, throw an error
+        else {
+            throw new NotationInterpretationException("Equation could not be balanced");
         }
-        System.out.println();
+    }
+
+    private boolean attemptToSolveChemEquation (ArrayList<AlgebraicEquation> algEquations,
+                                                ArrayList<String> balancedVariables,
+                                                HashMap<String, Fraction> coefficientFractionValue) {
+        boolean doneSomethingThisTime = true;
+        boolean finished = false;
+        while (doneSomethingThisTime && !finished) {
+            doneSomethingThisTime = false;
+
+            for (AlgebraicEquation alEq : algEquations) {
+                // ALLOW FOR SIMULTANEOUS EQUATIONS
+                // If the equation has already been balanced, or cannot be simply substituted
+                System.out.print(balancedVariables);
+                if (alEq.areAllTermsKnown(balancedVariables) ||
+                        !alEq.isSolvableBySimpleSubstitution(balancedVariables)) {
+                    System.out.println("All terms known: " + alEq.getTerms() + alEq.isSolvableBySimpleSubstitution(balancedVariables));
+                    continue;
+                }
+
+                System.out.println("Hi");
+
+                // Solve the simple substitution
+                coefficientFractionValue.put(alEq.findUnknownTerms(balancedVariables).get(0),
+                        alEq.solveSimpleSubstitution(coefficientFractionValue, balancedVariables));
+                balancedVariables.add(alEq.findUnknownTerms(balancedVariables).get(0));
+                doneSomethingThisTime = true;
+            }
+
+            // Is finished: if (this.isBalanced())
+            if (balancedVariables.size() == this.reactants.size() + this.products.size()) {
+                finished = true;
+
+            }
+        }
+        return finished;
     }
 
     public ArrayList<HashMap<Molecule, Integer>> coefficientsToEquation(HashMap<String, Molecule> moleculeCoefficients,
