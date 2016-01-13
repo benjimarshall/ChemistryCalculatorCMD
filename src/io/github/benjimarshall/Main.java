@@ -9,6 +9,15 @@ import java.util.HashMap;
 public class Main {
     public static void main(String[] args) {
         try {
+            // A = 3, B = 12, C = 7
+            AlgebraicEquation ag = new AlgebraicEquation("3C=1B+3A");
+            AlgebraicEquation ag2 = new AlgebraicEquation("2B=3C+1A");
+            ArrayList<String> test = new ArrayList<>();
+            test.add("A");
+            HashMap<String, Fraction> knownValues = new HashMap<>();
+            knownValues.put("A", Fraction.getFraction(3));
+            ag.solveSimultaneousEquations(ag2, test, knownValues);
+
             ArrayList<Integer> testArray = new ArrayList<>();
             testArray.add(20);
             testArray.add(5);
@@ -32,7 +41,8 @@ public class Main {
             variables.put("A", Fraction.getFraction(11));
             variables.put("C", Fraction.getFraction(5));
             System.out.println("Is solvable by simple substitution: " + ae.isSolvableBySimpleSubstitution(knownTerms));
-            System.out.println("SSEq Solution: " + ae.solveSimpleSubstitution(variables, knownTerms));
+            ae.solveSimpleSubstitution(variables, knownTerms);
+            System.out.println("SSEq Solution: " + variables);
 
             Element e = new Element("Sodium", Element.NAME);
             Element e2 = new Element("Sodium", Element.NAME);

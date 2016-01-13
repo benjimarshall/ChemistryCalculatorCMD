@@ -35,6 +35,21 @@ public class Equation {
         System.out.println("Is balanced: " + isBalanced(this.reactants, this.products));
         balance(this.reactants, this.products);
         System.out.println(isBalanced(this.reactants, this.products));
+
+        StringBuilder equationBuilder = new StringBuilder();
+
+        for (HashMap.Entry<Molecule, Integer> reactant: this.reactants.entrySet()) {
+            equationBuilder.append(reactant.getValue() + "" + reactant.getKey() + " + ");
+        }
+
+        equationBuilder.replace(equationBuilder.length() - 3, equationBuilder.length(), " -> ");
+
+        for (HashMap.Entry<Molecule, Integer> product: this.products.entrySet()) {
+            equationBuilder.append(product.getValue() + "" + product.getKey() + " + ");
+        }
+
+        equationBuilder.replace(equationBuilder.length() - 3, equationBuilder.length(), "");
+        this.equation = equationBuilder.toString();
     }
 
     private static HashMap<Molecule, Integer> makeChemicalMap(String equationSide)
@@ -253,8 +268,7 @@ public class Equation {
             coefficientFractionValue.put(startingEq.getTerms().get(0), Fraction.getFraction(1));
             balancedVariables.add(startingEq.getTerms().get(0));
             // Solve an SSEq to find out the other value
-            coefficientFractionValue.put(startingEq.getTerms().get(1),
-                    startingEq.solveSimpleSubstitution(coefficientFractionValue, balancedVariables));
+            startingEq.solveSimpleSubstitution(coefficientFractionValue, balancedVariables);
 
             balancedVariables.add(startingEq.getTerms().get(1));
             System.out.println(coefficientFractionValue);
@@ -308,9 +322,8 @@ public class Equation {
                 System.out.println("Hi");
 
                 // Solve the simple substitution
-                coefficientFractionValue.put(alEq.findUnknownTerms(balancedVariables).get(0),
-                        alEq.solveSimpleSubstitution(coefficientFractionValue, balancedVariables));
-                balancedVariables.add(alEq.findUnknownTerms(balancedVariables).get(0));
+                alEq.solveSimpleSubstitution(coefficientFractionValue, balancedVariables);
+                balancedVariables.add(alEq.getUnknownTerms(balancedVariables).get(0));
                 doneSomethingThisTime = true;
             }
 
@@ -363,6 +376,7 @@ public class Equation {
         return products;
     }
 
+    private String equation;
     private HashMap<Molecule, Integer> reactants = new HashMap<>();
     private HashMap<Molecule, Integer> products = new HashMap<>();
 }

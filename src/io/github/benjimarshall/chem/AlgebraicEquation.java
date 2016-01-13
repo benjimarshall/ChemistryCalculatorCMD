@@ -1,5 +1,6 @@
 package io.github.benjimarshall.chem;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.math.Fraction;
 
 import java.util.ArrayList;
@@ -84,7 +85,7 @@ public class AlgebraicEquation {
         return getNumberOfUnknownTerms(knownTerms) == 0;
     }
 
-    public ArrayList<String> findUnknownTerms(ArrayList<String> knownTerms) {
+    public ArrayList<String> getUnknownTerms(ArrayList<String> knownTerms) {
         ArrayList<String> unknownTerms = new ArrayList<>();
         for (String term: terms) {
             if (!knownTerms.contains(term)) {
@@ -155,6 +156,123 @@ public class AlgebraicEquation {
         return value1;
     }
 
+    public void solveSimultaneousEquations(AlgebraicEquation secondEquation, ArrayList<String> balancedVariables,
+                                           HashMap<String, Fraction> coefficientFractionValue) {
+        // Put all the equation to one side
+        HashMap<String, Fraction> firstEq = putTermsToOneSide(this, balancedVariables);
+        HashMap<String, Fraction> copyOfFirstEq = (HashMap<String, Fraction>) firstEq.clone();
+        HashMap<String, Fraction> secondEq = putTermsToOneSide(secondEquation, balancedVariables);
+        HashMap<String, Fraction> copyOfSecondEq = (HashMap<String, Fraction>) secondEq.clone();
+
+
+        // Choose a variable to substitute out
+        String substitutedVariable = this.getUnknownTerms(balancedVariables).get(0);
+        String targetVariable = this.getUnknownTerms(balancedVariables).get(1);
+
+        // Rearrange so that it is on the other side
+        firstEq.put(substitutedVariable, firstEq.get(substitutedVariable).multiplyBy(
+                Fraction.getFraction(-1)));
+        secondEq.put(substitutedVariable, secondEq.get(substitutedVariable).multiplyBy(
+                Fraction.getFraction(-1)));
+
+        // Make the coefficient of the chosen variable for both equations be one
+
+        // For the first equation
+        // Find the coefficient of the chosen variable
+        Fraction coefficient = Fraction.getFraction(firstEq.get(substitutedVariable).getNumerator(),
+                firstEq.get(substitutedVariable).getDenominator());
+
+        System.out.println(coefficient + ": " + firstEq);
+
+        // Divide all other coefficients by the chosen variable's coefficient (so the chosen variable's becomes 1)
+        for (HashMap.Entry<String, Fraction> term: firstEq.entrySet()) {
+            firstEq.put(term.getKey(), term.getValue().divideBy(coefficient));
+        }
+
+        // For the second equation
+        // Find the coefficient of the chosen variable
+        coefficient = Fraction.getFraction(secondEq.get(substitutedVariable).getNumerator(),
+                secondEq.get(substitutedVariable).getDenominator());
+
+
+
+        // Divide all other coefficients by the chosen variable's coefficient (so the chosen variable's becomes 1)
+        for (HashMap.Entry<String, Fraction> term: secondEq.entrySet()) {
+            secondEq.put(term.getKey(), term.getValue().divideBy(coefficient));
+        }
+
+        // The equations now equal one another, so remove the chosen variable
+        firstEq.remove(substitutedVariable);
+        secondEq.remove(substitutedVariable);
+
+        // Make a third equation for the equation of one side, subtracted from another
+        HashMap<String, Fraction> thirdEq = new HashMap<>();
+        if (shouldSubtractFirstEq(targetVariable, firstEq, secondEq)) {
+            thirdEq.put(targetVariable, firstEq.get(targetVariable).subtract(secondEq.get(targetVariable)));
+            for (HashMap.Entry<String, Fraction> termToSubtract: firstEq.entrySet()) {
+                thirdEq.put(termToSubtract.getKey(),
+                        secondEq.get(termToSubtract.getKey()).subtract(firstEq.get(termToSubtract.getKey())));
+            }
+        } else {
+            System.out.println("Else");
+            thirdEq.put(targetVariable, secondEq.get(targetVariable).subtract(firstEq.get(targetVariable)));
+            for (HashMap.Entry<String, Fraction> termToSubtract: secondEq.entrySet()) {
+                thirdEq.put(termToSubtract.getKey(),
+                        firstEq.get(termToSubtract.getKey()).subtract(secondEq.get(termToSubtract.getKey())));
+            }
+        }
+
+        // Rearrange in terms of the target variable
+        // If the coefficient of the target variable is negative, then you will need to divide it by a negative number
+        // and everything else should be divided by a positive number
+        // If the coefficient of the target variable is positive, then you will need to divide it by a positive number
+        // and everything else should be divided by a negative number
+        // Therefore, negate the divisor for everything, and the target will be one
+        Fraction divisor = thirdEq.get(targetVariable).multiplyBy(Fraction.getFraction(-1));
+        for (HashMap.Entry<String, Fraction> term: thirdEq.entrySet()) {
+            thirdEq.put(term.getKey(), term.getValue().divideBy(divisor));
+        }
+
+        thirdEq.remove(targetVariable);
+
+        // Substitute out any of the known variables of the 3rd eq
+
+        Fraction targetValue = Fraction.getFraction(0);
+        for (HashMap.Entry<String, Fraction> term: thirdEq.entrySet()) {
+            targetValue = targetValue.add(term.getValue().multiplyBy(coefficientFractionValue.get(term.getKey())));
+        }
+
+        System.out.println("Target: " + targetVariable + " " + targetValue);
+
+        balancedVariables.add(targetVariable);
+        coefficientFractionValue.put(targetVariable, targetValue);
+        solveSimpleSubstitution(coefficientFractionValue, balancedVariables);
+    }
+
+    private boolean shouldSubtractFirstEq(String targetVariable, HashMap<String, Fraction> firstEq,
+                                          HashMap<String, Fraction> secondEq) {
+        // You should subtract if first coefficient is smaller than the second
+        return firstEq.get(targetVariable).compareTo(secondEq.get(targetVariable)) <= -1;
+    }
+
+    public HashMap<String, Fraction> putTermsToOneSide(AlgebraicEquation eq, ArrayList<String> balancedVariables) {
+        HashMap<String, Fraction> rearrangedTerms = new HashMap<>();
+
+        System.out.println("pttoc: " + eq.getFirstSide() + eq.getSecondSide());
+
+        // For the variables not moving
+        for (HashMap.Entry<String, Integer> term: eq.getFirstSide().entrySet()) {
+            rearrangedTerms.put(term.getKey(), Fraction.getFraction(term.getValue()));
+        }
+
+        // For the variables moving to the other side
+        for (HashMap.Entry<String, Integer> term: eq.getSecondSide().entrySet()) {
+            rearrangedTerms.put(term.getKey(), Fraction.getFraction(term.getValue() * -1));
+        }
+
+        return rearrangedTerms;
+    }
+
     public static int lcm(int value1, int value2) {
         return (value1 * value2) / gcd(value1, value2);
     }
@@ -189,7 +307,7 @@ public class AlgebraicEquation {
         return secondSide;
     }
 
-    public Fraction solveSimpleSubstitution(HashMap<String, Fraction> variables, ArrayList<String> knownTerms) {
+    public void solveSimpleSubstitution(HashMap<String, Fraction> variables, ArrayList<String> knownTerms) {
         Fraction[] sides = new Fraction[]{Fraction.getFraction(0), Fraction.getFraction(0)};
         Fraction value;
         boolean isUnknownOnFirstSide = false;
@@ -240,7 +358,7 @@ public class AlgebraicEquation {
             value = value.divideBy(Fraction.getFraction(secondSide.get(unknownTerm)));
         }
 
-        return value;
+        variables.put(unknownTerm, value);
     }
 
     private ArrayList<String> terms = new ArrayList<>();
