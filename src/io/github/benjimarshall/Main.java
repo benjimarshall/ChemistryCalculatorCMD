@@ -9,13 +9,15 @@ import java.util.HashMap;
 public class Main {
     public static void main(String[] args) {
         try {
-            // A = 3, B = 12, C = 7
-            AlgebraicEquation ag = new AlgebraicEquation("3C=1B+3A");
-            AlgebraicEquation ag2 = new AlgebraicEquation("2B=3C+1A");
+            // A = 3, B = 12, C = 7, D = 0
+            AlgebraicEquation ag = new AlgebraicEquation("3C=1B+3A+2D");
+            AlgebraicEquation ag2 = new AlgebraicEquation("2B=3C+1A+2D");
             ArrayList<String> test = new ArrayList<>();
             test.add("A");
+            test.add("D");
             HashMap<String, Fraction> knownValues = new HashMap<>();
             knownValues.put("A", Fraction.getFraction(3));
+            knownValues.put("D", Fraction.getFraction(0));
             ag.solveSimultaneousEquations(ag2, test, knownValues);
 
             ArrayList<Integer> testArray = new ArrayList<>();
@@ -58,12 +60,18 @@ public class Main {
             System.out.println("RFM: " + molecule.getRelativeFormulaMass());
 
             Equation equation1 = new Equation("C2H6 + O2 -> CO2 + H2O");
+            System.out.println(equation1);
             Equation equation2 = new Equation("N2 + H2 -> NH3");
+            System.out.println(equation2);
             Equation equation3 = new Equation("C + O2 -> CO2");
+            System.out.println(equation3);
+            Equation equation4 = new Equation("S + HNO3 -> H2SO4 + NO2 + H2O");
+            System.out.println(equation4);
             Equation equation = new Equation("C2H6 + O2 -> CO2 + H2O + C");
+            System.out.println(equation);
 
         }
-        catch (FlagException | NotationInterpretationException e) {
+        catch (ArithmeticException | FlagException | NotationInterpretationException e) {
             System.out.println("Something went wrong: " + e.getMessage());
         }
     }

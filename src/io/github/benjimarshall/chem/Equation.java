@@ -11,8 +11,6 @@ public class Equation {
         // Simplify the equation's arrow
         equation = equation.replace("->", ">");
 
-        System.out.println("Hi: " + equation);
-
         // Check that the equation is in a valid format
         // Add coefficients to numbers
         if (!equation.matches("(\\d*([\\(]?[A-Z][a-z]?\\d*(\\)\\d*)?)+)(\\+(\\d*([\\(]?[A-Z][a-z]?\\d*(\\)\\d*)?)+))*>" +
@@ -32,20 +30,32 @@ public class Equation {
             throw new NotationInterpretationException("There are different elements on either side of the reaction");
         }
 
-        System.out.println("Is balanced: " + isBalanced(this.reactants, this.products));
         balance(this.reactants, this.products);
-        System.out.println(isBalanced(this.reactants, this.products));
 
         StringBuilder equationBuilder = new StringBuilder();
 
         for (HashMap.Entry<Molecule, Integer> reactant: this.reactants.entrySet()) {
-            equationBuilder.append(reactant.getValue() + "" + reactant.getKey() + " + ");
+            String coefficient = Integer.toString(reactant.getValue());
+            if (coefficient.equals("0")) {
+                continue;
+            }
+            else if (coefficient.equals("1")) {
+                coefficient = "";
+            }
+            equationBuilder.append(coefficient).append("").append(reactant.getKey()).append(" + ");
         }
 
         equationBuilder.replace(equationBuilder.length() - 3, equationBuilder.length(), " -> ");
 
         for (HashMap.Entry<Molecule, Integer> product: this.products.entrySet()) {
-            equationBuilder.append(product.getValue() + "" + product.getKey() + " + ");
+            String coefficient = Integer.toString(product.getValue());
+            if (coefficient.equals("0")) {
+                continue;
+            }
+            else if (coefficient.equals("1")) {
+                coefficient = "";
+            }
+            equationBuilder.append(coefficient).append("").append(product.getKey()).append(" + ");
         }
 
         equationBuilder.replace(equationBuilder.length() - 3, equationBuilder.length(), "");
@@ -240,12 +250,8 @@ public class Equation {
                 }
             }
 
-            System.out.println(element.getSymbol() + " " + equation);
-
             algEquations.add(new AlgebraicEquation(equation, AlgebraicEquation.WARN_ON_MULTIPLE_OCCURRENCES));
         }
-
-        System.out.println("Hi");
 
         ArrayList<String> balancedVariables;
 
@@ -254,7 +260,7 @@ public class Equation {
                 (HashMap<String, Fraction>) coefficientFractionValue.clone();
         boolean finished = false;
 
-        // Balancing fun:
+        // Balance the equation, loop through equations to find a starting equation:
         for (AlgebraicEquation startingEq: algEquations) {
             // Reset the coefficients to be 0, and empty the list of known terms
             coefficientFractionValue = (HashMap<String, Fraction>) copyOfCoefficentFractionValue.clone();
@@ -271,16 +277,12 @@ public class Equation {
             startingEq.solveSimpleSubstitution(coefficientFractionValue, balancedVariables);
 
             balancedVariables.add(startingEq.getTerms().get(1));
-            System.out.println(coefficientFractionValue);
-
             finished = attemptToSolveChemEquation(algEquations, balancedVariables, coefficientFractionValue);
 
             if (finished) {
                 break;
             }
         }
-
-        System.out.println("Finished solving");
 
         // Did the equation successfully balance?
         if (finished) {
@@ -293,7 +295,6 @@ public class Equation {
             for (HashMap.Entry<Molecule, Integer> mol : sides.get(1).entrySet()) {
                 this.products.put(mol.getKey(), mol.getValue());
             }
-            System.out.println(this.reactants + "" + this.products);
         }
         // If it didn't, throw an error
         else {
@@ -306,37 +307,66 @@ public class Equation {
                                                 HashMap<String, Fraction> coefficientFractionValue) {
         boolean doneSomethingThisTime = true;
         boolean finished = false;
+        ArrayList<AlgebraicEquation> foundSimultaneousEquations;
         while (doneSomethingThisTime && !finished) {
             doneSomethingThisTime = false;
+            foundSimultaneousEquations  = new ArrayList<>();
 
+            // Try to deduce values from each equation
             for (AlgebraicEquation alEq : algEquations) {
-                // ALLOW FOR SIMULTANEOUS EQUATIONS
-                // If the equation has already been balanced, or cannot be simply substituted
-                System.out.print(balancedVariables);
-                if (alEq.areAllTermsKnown(balancedVariables) ||
-                        !alEq.isSolvableBySimpleSubstitution(balancedVariables)) {
-                    System.out.println("All terms known: " + alEq.getTerms() + alEq.isSolvableBySimpleSubstitution(balancedVariables));
-                    continue;
+                // If there are two unknown variables, it could be solved by simultaneous equations so note it
+                if (alEq.getUnknownTerms(balancedVariables).size() == 2) {
+                    foundSimultaneousEquations.add(alEq);
                 }
-
-                System.out.println("Hi");
-
-                // Solve the simple substitution
-                alEq.solveSimpleSubstitution(coefficientFractionValue, balancedVariables);
-                balancedVariables.add(alEq.getUnknownTerms(balancedVariables).get(0));
-                doneSomethingThisTime = true;
+                // If one term is known, it can be solved by simple substitution
+                else if (alEq.getUnknownTerms(balancedVariables).size() == 1) {
+                    alEq.solveSimpleSubstitution(coefficientFractionValue, balancedVariables);
+                    balancedVariables.add(alEq.getUnknownTerms(balancedVariables).get(0));
+                    doneSomethingThisTime = true;
+                }
+                // Else if all terms have been found, or there are more than 2 unknown terms, do nothingt
             }
 
-            // Is finished: if (this.isBalanced())
+            // If all of the values of the variables have been found, the process has finished
             if (balancedVariables.size() == this.reactants.size() + this.products.size()) {
                 finished = true;
-
             }
+
+            boolean doneSimultaneousSolving = false;
+
+            // If some simultaneous equations have been found, solve them
+            if (!doneSomethingThisTime && foundSimultaneousEquations.size() >=2 ) {
+                for (AlgebraicEquation eq1: foundSimultaneousEquations) {
+                    for (AlgebraicEquation eq2 : foundSimultaneousEquations) {
+                        // If they share terms (and aren't the same equation!), continue
+                        if (eq1 == eq2 || !eq1.getUnknownTerms(balancedVariables).equals(
+                                eq2.getUnknownTerms(balancedVariables))) {
+                            continue;
+                        }
+                        try {
+                            eq1.solveSimultaneousEquations(eq2, balancedVariables, coefficientFractionValue);
+                            doneSimultaneousSolving = true;
+                            break;
+                        }
+                        // If the equations were equivalent: give up and try again
+                        catch (ArithmeticException ignored) {
+                        }
+                    }
+
+                    // Break out of the outer loop as well if simultaneous equations have been solved
+                    if (doneSimultaneousSolving) {
+                        doneSomethingThisTime = true;
+                        break;
+                    }
+                }
+            }
+
         }
+        // Return whether the attempt has been successful
         return finished;
     }
 
-    public ArrayList<HashMap<Molecule, Integer>> coefficientsToEquation(HashMap<String, Molecule> moleculeCoefficients,
+    private ArrayList<HashMap<Molecule, Integer>> coefficientsToEquation(HashMap<String, Molecule> moleculeCoefficients,
                                                                         HashMap<String, Integer> coefficientValues) {
         ArrayList<HashMap<Molecule, Integer>> sides = new ArrayList<>();
         sides.add(new HashMap<>());
@@ -368,12 +398,21 @@ public class Equation {
         return sides;
     }
 
+    @Override
+    public String toString() {
+        return this.getEquation();
+    }
+
     public HashMap<Molecule, Integer> getReactants() {
         return reactants;
     }
 
     public HashMap<Molecule, Integer> getProducts() {
         return products;
+    }
+
+    public String getEquation() {
+        return equation;
     }
 
     private String equation;
