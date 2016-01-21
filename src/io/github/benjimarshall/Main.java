@@ -59,7 +59,9 @@ public class Main {
             }
             System.out.println("RFM: " + molecule.getRelativeFormulaMass());
 
-            Equation equation1 = new Equation("C2H6 + O2 -> CO2 + H2O");
+            Equation equation = new Equation("C2H6 + O2 -> CO2 + H2O");
+            System.out.println(equation);
+            Equation equation1 = new Equation("N2 + H2 + H2 + H2 -> NH3 + NH3");
             System.out.println(equation1);
             Equation equation2 = new Equation("N2 + H2 -> NH3");
             System.out.println(equation2);
@@ -67,8 +69,8 @@ public class Main {
             System.out.println(equation3);
             Equation equation4 = new Equation("S + HNO3 -> H2SO4 + NO2 + H2O");
             System.out.println(equation4);
-            Equation equation = new Equation("C2H6 + O2 -> CO2 + H2O + C");
-            System.out.println(equation);
+            Equation equation5 = new Equation("C2H6 + O2 -> CO2 + H2O + C");
+            System.out.println(equation5);
 
         }
         catch (ArithmeticException | FlagException | NotationInterpretationException e) {

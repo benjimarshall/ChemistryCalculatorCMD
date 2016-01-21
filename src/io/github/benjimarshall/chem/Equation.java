@@ -26,12 +26,32 @@ public class Equation {
         this.products = makeChemicalMap(equationSides[1]);
 
 
-        if (!isElementsPresent(reactants, products)) {
+        if (!isElementsPresent(this.reactants, this.products)) {
             throw new NotationInterpretationException("There are different elements on either side of the reaction");
         }
 
-        balance(this.reactants, this.products);
+        // See if the supplied equation is balanced, if it is not attempt to balance
+        if (!isBalanced(this.reactants, this.products)) {
+            // Attempt to balance the equation
+            try {
+                balance(this.reactants, this.products);
+            }
+            catch (NotationInterpretationException e) {
+                // If the program doesn't know how to solve it, attempt to brute force it
+                if (e.getMessage().equals("Equation could not be balanced")) {
+                    // If the brute forcing fails, re-throw the error saying it can't be balanced
+                    if (!bruteBalance(this.reactants, this.products, 10)) {
+                        throw e;
+                    }
+                }
+                // If it was a different error, not to do with how to solve it, then re-throw
+                else {
+                    throw e;
+                }
+            }
+        }
 
+        // Generate a string for the equation
         StringBuilder equationBuilder = new StringBuilder();
 
         for (HashMap.Entry<Molecule, Integer> reactant: this.reactants.entrySet()) {
@@ -101,7 +121,14 @@ public class Equation {
                     }
                 }
                 // Put the molecule into the map
-                chemicals.put(new Molecule(stringQuantity), quantity);
+                // Check to see if the molecule has already been added to the map, if so increment the value
+                if (chemicals.containsKey(new Molecule(stringQuantity))) {
+                    chemicals.put(new Molecule(stringQuantity), quantity + chemicals.get(new Molecule(stringQuantity)));
+                }
+                // If the molecule hasn't been added yet, just add it to the map
+                else {
+                    chemicals.put(new Molecule(stringQuantity), quantity);
+                }
             }
             // If the chemical doesn't have a coefficient, assume that it is 1
             else {
@@ -364,6 +391,53 @@ public class Equation {
         }
         // Return whether the attempt has been successful
         return finished;
+    }
+
+    private boolean bruteBalance(HashMap<Molecule, Integer> reactants, HashMap<Molecule, Integer> products, int limit) {
+        ArrayList<Molecule> orderedMolecules = new ArrayList<>();
+        orderedMolecules.addAll(reactants.keySet());
+        orderedMolecules.add(null);
+        orderedMolecules.addAll(products.keySet());
+
+        return bruteBalance(reactants, products, 0, limit, orderedMolecules, true);
+    }
+
+    private boolean bruteBalance(HashMap<Molecule, Integer> reactants, HashMap<Molecule, Integer> products,
+                                            int position, int limit, ArrayList<Molecule> orderedMolecules,
+                                            boolean doingReactants) {
+        Molecule targetMolecule = orderedMolecules.get(position);
+        boolean successful = false;
+
+        if (targetMolecule == null) {
+            return bruteBalance(reactants, products, ++position, limit, orderedMolecules, false);
+        }
+
+        for (int quantity = 1; quantity <= limit; quantity++) {
+            // Increment this chemical's quantity
+            if (doingReactants) {
+                reactants.put(targetMolecule, quantity);
+            }
+            else {
+                products.put(targetMolecule, quantity);
+            }
+
+            // Either call for the next chemical, or check, depending if we are at the end of the list
+            // If we are at the end of the list
+            if (position == orderedMolecules.size() - 1) {
+                if (isBalanced(reactants, products)) {
+                    successful = true;
+                }
+            }
+            // Call the next chemical
+            else {
+                successful = bruteBalance(reactants, products, position + 1, limit, orderedMolecules, doingReactants);
+            }
+
+            if (successful) {
+                break;
+            }
+        }
+        return successful;
     }
 
     private ArrayList<HashMap<Molecule, Integer>> coefficientsToEquation(HashMap<String, Molecule> moleculeCoefficients,
