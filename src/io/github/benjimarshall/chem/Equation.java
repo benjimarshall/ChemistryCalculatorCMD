@@ -40,7 +40,7 @@ public class Equation {
                 // If the program doesn't know how to solve it, attempt to brute force it
                 if (e.getMessage().equals("Equation could not be balanced")) {
                     // If the brute forcing fails, re-throw the error saying it can't be balanced
-                    if (!bruteBalance(this.reactants, this.products, 10)) {
+                    if (!bruteBalance(this.reactants, this.products, 15)) {
                         throw e;
                     }
                 }
