@@ -3,13 +3,16 @@ package io.github.benjimarshall;
 import io.github.benjimarshall.chem.*;
 import org.apache.commons.lang3.math.Fraction;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class Main {
     static Scanner sc = new Scanner(System.in);
-    static boolean balancingMode = true;
+    static boolean balancingMode = false;
 
 
     public static void main(String[] args) {
@@ -79,7 +82,26 @@ public class Main {
                 Equation equation4 = new Equation("S + HNO3 -> H2SO4 + NO2 + H2O");
                 System.out.println(equation4);
                 Equation equation5 = new Equation("C2H6 + O2 -> CO2 + H2O + C");
-                System.out.println(equation5);
+                System.out.println(equation5 + "\n\n");
+
+                Mole mole = new Mole(5.0);
+                Mole mole1 = new Mole(3);
+
+                System.out.println(mole.toString());
+                System.out.println("5 + 3 = " + mole.add(mole1));
+                System.out.println("5 - 3 = " + mole.subtract(mole1));
+                System.out.println("5 * 3 = " + mole.multiply(mole1));
+                System.out.println("5 / 3 = " + mole.divide(mole1));
+
+
+                Mass mass = new Mass(BigDecimal.valueOf(3), Mass.Unit.tonne);
+                Mass mass1 = new Mass(3, Mass.Unit.g);
+
+                System.out.println("\n" + mass);
+                System.out.println("5 + 3 = " + mass.add(mass1));
+                System.out.println("5 - 3 = " + mass.subtract(mass1));
+                System.out.println("5 * 3 = " + mass.multiply(mass1));
+                System.out.println("5 / 3 = " + mass.divide(mass1));
 
             } catch (ArithmeticException | FlagException | NotationInterpretationException e) {
                 System.out.println("Something went wrong: " + e.getMessage());

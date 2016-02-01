@@ -1,22 +1,19 @@
 package io.github.benjimarshall.chem;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 
 public class Mole {
     private Mole() {
 
     }
 
-    private Mole(BigDecimal quantity) {
+    public Mole(BigDecimal quantity) {
         this.quantity = quantity;
     }
 
-    public static Mole valueOf(double quantity) {
-        return new Mole(BigDecimal.valueOf(quantity));
-    }
-
-    public static Mole valueOf(BigDecimal quantity) {
-        return new Mole(quantity);
+    public Mole(double quantity) {
+        this(BigDecimal.valueOf(quantity));
     }
 
     public Mole add(Mole mole) {
@@ -32,7 +29,7 @@ public class Mole {
     }
 
     public Mole divide(Mole mole) {
-        return new Mole(this.quantity.divide(mole.getQuantity()));
+        return new Mole(this.quantity.divide(mole.getQuantity(), MathContext.DECIMAL32));
     }
 
     public BigDecimal getQuantity() {
