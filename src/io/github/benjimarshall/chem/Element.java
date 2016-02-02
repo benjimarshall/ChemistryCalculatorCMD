@@ -6,12 +6,19 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+/**
+ * Chemical Element. A {@code Element} consists of a name, symbol, an atomic mass and an atomic number
+ *
+ * @author Benji Marshall
+ * @since 2016-2-2
+ */
 public class Element {
-    private Element() {
+    private Element() {}
 
-    };
-
-    // Make deep copy
+    /**
+     * Makes a deep copy of the {@code Element} object
+     * @param element the element to copy
+     */
     public Element(Element element) {
         this.symbol = element.getSymbol();
         this.name = element.getName();
@@ -19,7 +26,15 @@ public class Element {
         this.massNumber = element.getMassNumber();
     }
 
-    // Find the element in the periodic table based on symbol or name
+
+
+    /**
+     * Find a {@code Element} object in the periodic table based on symbol or name
+     * @param name the symbol or name of the element (eg. {@code Na} or {@code Sodium})
+     * @param flag whether {@code name} is a symbol {@link #SYMBOL} or a {@link #NAME}
+     * @throws FlagException if the flag is not one of the two flags
+     * @throws NotationInterpretationException if no element was found to match the name parameter
+     */
     public Element(String name, int flag) throws FlagException, NotationInterpretationException {
         // One way flag to see if the element is found in the periodic table or not
         boolean successful = false;
@@ -75,7 +90,17 @@ public class Element {
 
     }
 
-    // Specify each field for the element object
+    /**
+     * Makes a custom {@code Element} object from a name and numerical parameters
+     * @param symbol the symbol of the element (eg. {@code Na})
+     * @param name the name of the element (eg. {@code Sodium})
+     * @param atomicNumber the atomic number of the element (eg. {@code 11})
+     * @param massNumber the relative atomic mass of the element (eg. {@code 22.9898})
+     * @see #symbol
+     * @see #name
+     * @see #atomicNumber
+     * @see #massNumber
+     */
     public Element(String symbol, String name, int atomicNumber, double massNumber) {
         this.symbol = symbol;
         this.name = name;
@@ -83,6 +108,11 @@ public class Element {
         this.massNumber = massNumber;
     }
 
+    /**
+     * A custom equals method, to compare elements
+     * @param o the object to compare to this {@code Element} object
+     * @return whether the two {@code Element} objects are equal
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -96,6 +126,10 @@ public class Element {
                 getName().equals(element.getName());
     }
 
+    /**
+     * Generates the hash code of this {@code Element} object
+     * @return the hash code of this {@code Element} object
+     */
     @Override
     public int hashCode() {
         int result;
@@ -108,35 +142,73 @@ public class Element {
         return result;
     }
 
-    // Getters for the Element
+
+    /**
+     * Gets the {@code Element} object's {@link #symbol}
+     * @return the {@code Element} object's {@link #symbol}
+     */
     public String getSymbol() {
         return symbol;
     }
 
+    /**
+     * Gets the {@code Element} object's {@link #name}
+     * @return the {@code Element} object's {@link #name}
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets the {@code Element} object's {@link #massNumber}
+     * @return the {@code Element} object's {@link #massNumber}
+     */
     public double getMassNumber() {
         return massNumber;
     }
 
+    /**
+     * Gets the {@code Element} object's {@link #atomicNumber}
+     * @return the {@code Element} object's {@link #atomicNumber}
+     */
     public int getAtomicNumber() {
         return atomicNumber;
     }
 
-    // Fields of the class
-    private String symbol;      // Eg. Na
-    private String name;        // Eg. Sodium
-    private double massNumber;  // Eg. 22.9898...
-    private int atomicNumber;   // Eg. 11
+    /**
+     * The symbol of the element. For example: {@code Na}
+     */
+    protected String symbol;
 
-    // Flags for constructors
+    /**
+     * The name of the element. For example: {@code Sodium}
+     */
+    protected String name;
+
+    /**
+     * The atomic number of the element. For example: {@code 11}
+     */
+    protected double massNumber;
+
+    /**
+     * The relative atomic mass of the element. For example: {@code 22.9898}
+     */
+    protected int atomicNumber;   // Eg. 11
+
+    /**
+     * A flag for the {@link #Element(String, int)} constructor, for when the element's symbol is passed
+     */
     public static final int SYMBOL = 0;
+
+    /**
+     * A flag for the {@link #Element(String, int)} constructor, for when the element's name is passed
+     */
     public static final int NAME = 1;
 
-    // Make the periodic table
-    private static ArrayList<Element> periodicTable = new ArrayList<>();
+    /**
+     * A periodic table generated from a csv resource file
+     */
+    protected static ArrayList<Element> periodicTable = new ArrayList<>();
     static {
         try {
             // Make the CSV reader
