@@ -176,22 +176,31 @@ public class Element {
     }
 
     /**
-     * The symbol of the element. For example: {@code Na}
+     * Gets the {@code Element} object's {@link #symbol}
+     * @return the {@code Element} object's {@link #symbol}
+     */
+    @Override
+    public String toString() {
+        return this.getSymbol();
+    }
+
+    /**
+     * The symbol of the {@code Element} object. For example: {@code Na}
      */
     protected String symbol;
 
     /**
-     * The name of the element. For example: {@code Sodium}
+     * The name of the {@code Element} object. For example: {@code Sodium}
      */
     protected String name;
 
     /**
-     * The atomic number of the element. For example: {@code 11}
+     * The atomic number of the {@code Element} object. For example: {@code 11}
      */
     protected double massNumber;
 
     /**
-     * The relative atomic mass of the element. For example: {@code 22.9898}
+     * The relative atomic mass of the {@code Element} object. For example: {@code 22.9898}
      */
     protected int atomicNumber;   // Eg. 11
 
