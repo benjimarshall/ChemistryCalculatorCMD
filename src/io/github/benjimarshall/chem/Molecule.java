@@ -7,7 +7,6 @@ import java.util.Set;
  * Chemical Molecule. A {@code Molecule} object consists of its constituent {@code Element} objects, and their rations,
  * and its relative formula mass
  *
- *
  * @author Benji Marshall
  * @since 2016-2-4
  */
@@ -59,7 +58,7 @@ public class Molecule {
      * @param formula formula string to parse into a map of {@code Element} objects
      * @return the map of {@code Element} objects
      * @throws NotationInterpretationException when the formula cannot be interpreted, such as an invalid
-     * {@code Element}
+     *         {@code Element}
      * @see #formula
      * @see #elementMap
      */
