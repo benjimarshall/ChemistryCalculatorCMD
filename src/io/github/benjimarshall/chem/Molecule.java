@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
- * Chemical Molecule. A {@code Molecule} consists its constituent {@code Element} objects, and their rations,
+ * Chemical Molecule. A {@code Molecule} object consists of its constituent {@code Element} objects, and their rations,
  * and its relative formula mass
  *
  *

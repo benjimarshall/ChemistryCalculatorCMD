@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 /**
- * Chemical Element. A {@code Element} consists of a name, symbol, an atomic mass and an atomic number
+ * Chemical Element. A {@code Element} object consists of a name, symbol, an atomic mass and an atomic number
  *
  * @author Benji Marshall
  * @since 2016-2-2
