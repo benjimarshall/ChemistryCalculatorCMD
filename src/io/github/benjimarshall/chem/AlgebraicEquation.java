@@ -1,14 +1,43 @@
 package io.github.benjimarshall.chem;
 
 import org.apache.commons.lang3.math.Fraction;
-import java.util.ArrayList;
-import java.util.HashMap;
 
+import java.util.*;
+
+/**
+ * Algebraic Equation. A {@code AlgebraicEquation} object consists of a variable names and their coefficients, #
+ * for each side.
+ *
+ * <p>WARNING: THIS CLASS WAS DESIGNED FOR {@link Equation} BALANCING, SO IT ONLY WORKS WITH VARIABLES BEING
+ * ADDED ON EITHER SIDE OF THE EQUATION, WITH OPTIONAL INTEGER COEFFICIENTS OF THE VARIABLE. THERE IS NO PROVISION FOR
+ * SUBTRACTION, MULTIPLICATION, DIVISION, OR NON-VARIABLE VALUES.</p>
+ *
+ * @author Benji Marshall
+ * @since 2016-2-2
+ * @see Equation
+ */
 public class AlgebraicEquation {
+    /**
+     * Constructs an {@code AlgebraicEquation} object, presuming that warning on multiple occurrences is not necessary,
+     *         from a {@code String} representation of the equation. For example: {@code A + 2B = 4C + 3D}
+     * @param equation the {@code String} representation of the equation
+     * @throws NotationInterpretationException when the {@code equation} cannot be interpreted
+     */
     public AlgebraicEquation(String equation) throws NotationInterpretationException {
         this(equation, DO_NOT_WARN_ON_MULTIPLE_OCCURRENCES);
     }
 
+    /**
+     * Constructs an {@code AlgebraicEquation} object, presuming that warning on multiple occurrences is necessary, with
+     *         a flag from saying whether to throw a {@code NotationInterpretationException} exception on multiple
+     *         occurrences of a variable a {@code String} representation of the equation.
+     *         For example: {@code A + 2B = 4C + 3D}
+     * @param equation the {@code String} representation of the equation
+     * @param flag m whether to throw a {@code NotationInterpretationException} exception on multiple occurrences of a
+     *         variable, see {@link #WARN_ON_MULTIPLE_OCCURRENCES} and {@link #DO_NOT_WARN_ON_MULTIPLE_OCCURRENCES}
+     * @throws NotationInterpretationException when the {@code equation} cannot be interpreted, or if there are multiple
+     *         occurrences of a variable and it has been asked to throw errors if multiple occurrences are found
+     */
     public AlgebraicEquation(String equation, boolean flag) throws NotationInterpretationException {
         // Clean out the whitespace
         equation = equation.replace(" ", "");
@@ -21,10 +50,6 @@ public class AlgebraicEquation {
         this.firstSide = makeSideMap(sides[0], flag);
         this.secondSide = makeSideMap(sides[1], flag);
         this.equation = equation;
-    }
-
-    private HashMap<String, Integer> makeSideMap(String side) throws NotationInterpretationException {
-        return makeSideMap(side, DO_NOT_WARN_ON_MULTIPLE_OCCURRENCES);
     }
 
     private HashMap<String, Integer> makeSideMap(String side, boolean flag) throws NotationInterpretationException {
@@ -72,19 +97,42 @@ public class AlgebraicEquation {
         return sideMap;
     }
 
+    /**
+     * Finds whether the {@code AlgebraicEquation} object has two terms
+     * @return whether the {@code AlgebraicEquation} object has two terms
+     */
     public boolean hasTwoTerms() {
         return this.terms.size() == 2;
     }
 
-    public boolean isSolvableBySimpleSubstitution(ArrayList<String> knownTerms) {
+    /**
+     * Finds whether the {@code AlgebraicEquation} object is solvable by simple substitution, with a Collection of
+     * known terms
+     * @param knownTerms a list of which terms are already known
+     * @return whether the {@code AlgebraicEquation} object is is solvable by simple substitution
+     * @see #getNumberOfUnknownTerms(Collection)
+     */
+    public boolean isSolvableBySimpleSubstitution(Collection<String> knownTerms) {
         return getNumberOfUnknownTerms(knownTerms) <= 1;
     }
 
+    /**
+     * Finds whether all of the terms of the {@code AlgebraicEquation} object are known, if a passed Collection of terms
+     * are known
+     * @param knownTerms a list of which terms are already known
+     * @return the number of the terms in the {@code AlgebraicEquation} object that are known
+     * @see #getNumberOfUnknownTerms(Collection)
+     */
     public boolean areAllTermsKnown(ArrayList<String> knownTerms) {
         return getNumberOfUnknownTerms(knownTerms) == 0;
     }
 
-    public ArrayList<String> getUnknownTerms(ArrayList<String> knownTerms) {
+    /**
+     * Finds which terms are known in the {@code AlgebraicEquation} object with a passed Collection of known terms
+     * @param knownTerms a list of which terms are already known
+     * @return a Collection of unknown terms
+     */
+    public List<String> getUnknownTerms(Collection<String> knownTerms) {
         ArrayList<String> unknownTerms = new ArrayList<>();
         for (String term : terms) {
             if (!knownTerms.contains(term)) {
@@ -94,7 +142,13 @@ public class AlgebraicEquation {
         return unknownTerms;
     }
 
-    private int getNumberOfUnknownTerms(ArrayList<String> knownTerms) {
+    /**
+     * Finds the number of unknown terms in the {@code AlgebraicEquation} object are known, if a passed Collection of
+     * terms are known
+     * @param knownTerms a list of which terms are already known
+     * @return whether all of the terms of the {@code AlgebraicEquation} object are known
+     */
+    public int getNumberOfUnknownTerms(Collection<String> knownTerms) {
         int unknownTerms = 0;
         // Loop through each term
         for (String term : this.terms) {
@@ -106,7 +160,13 @@ public class AlgebraicEquation {
         return unknownTerms;
     }
 
-    public static HashMap<String, Integer> simplifyCoefficients(HashMap<String, Fraction> coefficientFractionValues) {
+    /**
+     * Takes a Map of terms, and simplifies their coefficients, For example: <code>{2, 10, 14, 6}</code> would simplify
+     * to <code>{1, 5, 7, 3}</code>
+     * @param coefficientFractionValues the Map of terms to be simplified
+     * @return a Map of simplified terms
+     */
+    public static Map<String, Integer> simplifyCoefficients(Map<String, Fraction> coefficientFractionValues) {
         HashMap<String, Integer> simplifiedValues = new HashMap<>();
         ArrayList<Integer> denominators = new ArrayList<>();
         // Make integers the fractions integers, so get their denominators
@@ -130,15 +190,13 @@ public class AlgebraicEquation {
         return simplifiedValues;
     }
 
-    public static int gcd(ArrayList<Integer> values) {
-        int value = values.get(0);
-        for (int i : values) {
-            value = gcd(i, value);
-        }
-
-        return value;
-    }
-
+    /**
+     * Find the Greatest Common Divisor of two integers
+     * @param value1 the the first integer
+     * @param value2 the the second integer
+     * @return the Greatest Common Divisor
+     * @see #gcd(int, int)
+     */
     public static int gcd(int value1, int value2) {
         int r;
         if (value2 > value1) {
@@ -155,16 +213,124 @@ public class AlgebraicEquation {
         return value1;
     }
 
-    public void solveSimultaneousEquations(AlgebraicEquation secondEquation, ArrayList<String> balancedVariables,
-                                           HashMap<String, Fraction> coefficientFractionValue) {
+    /**
+     * Find the Greatest Common Divisor of a List of integers
+     * @param values the list of values
+     * @return the Greatest Common Divisor
+     */
+    public static int gcd(List<Integer> values) {
+        int value = values.get(0);
+        for (int i : values) {
+            value = gcd(i, value);
+        }
+
+        return value;
+    }
+
+    /**
+     * Find the Lowest Common Multiple of two integers
+     * @param value1 the the first integer
+     * @param value2 the the second integer
+     * @return the Lowest Common Multiple
+     * @see #gcd(int, int)
+     */
+    public static int lcm(int value1, int value2) {
+        return (value1 * value2) / gcd(value1, value2);
+    }
+
+    /**
+     * Find the Lowest Common Multiple of a List of integers
+     * @param values the list of values
+     * @return the Lowest Common Multiple
+     * @see #lcm(int, int)
+     */
+    public static int lcm(List<Integer> values) {
+        int value = values.get(0);
+        for (int i : values) {
+            value = lcm(i, value);
+        }
+
+        return value;
+    }
+
+    /**
+     * Solve this equation using simple substitution with a list of known variables, and a HashMap of their values,
+     * to be modified to include the solved value
+     * @param variables a HashMap of their values, to be modified to include the solved value
+     * @param knownTerms a list of known variables
+     */
+    public void solveSimpleSubstitution(HashMap<String, Fraction> variables, List<String> knownTerms) {
+        Fraction[] sides = new Fraction[]{Fraction.getFraction(0), Fraction.getFraction(0)};
+        Fraction value;
+        boolean isUnknownOnFirstSide = false;
+        String unknownTerm = "";
+
+        // Work out the value of the first side
+        // Iterate over every term
+        for (HashMap.Entry<String, Integer> term : this.firstSide.entrySet()) {
+            // If the value is known, add it to the side, after multiplying it by its coefficient
+            if (knownTerms.contains(term.getKey())) {
+                sides[0] = sides[0].add(variables.get(term.getKey()) // The value of the variable
+                        .multiplyBy(Fraction.getFraction(term.getValue()))); // Multiplied by coefficient
+            }
+            // If the value is unknown, the unknown is on the left side
+            else {
+                isUnknownOnFirstSide = true;
+                unknownTerm = term.getKey();
+            }
+        }
+
+        // Work out the value of the second side
+        // Iterate over every term
+        for (HashMap.Entry<String, Integer> term : this.secondSide.entrySet()) {
+            // If the value is known, add it to the side, after multiplying it by its coefficient
+            if (knownTerms.contains(term.getKey())) {
+                sides[1] = sides[1].add(variables.get(term.getKey()) // The value of the variable
+                        .multiplyBy(Fraction.getFraction(term.getValue()))); // Multiplied by coefficient
+            }
+            else {
+                isUnknownOnFirstSide = false;
+                unknownTerm = term.getKey();
+            }
+        }
+
+        // Subtract so that x = const, and then divide by the coefficient of x
+        // If x is on the first side
+        if (isUnknownOnFirstSide) {
+            // Subtract the first side from, the second
+            value = sides[1].subtract(sides[0]);
+            // Divide by the coefficient of x
+            value = value.divideBy(Fraction.getFraction(firstSide.get(unknownTerm)));
+        }
+        // Else x is on the second side
+        else {
+            // Subtract the second side from, the first
+            value = sides[0].subtract(sides[1]);
+            // Divide by the coefficient of x
+            value = value.divideBy(Fraction.getFraction(secondSide.get(unknownTerm)));
+        }
+
+        variables.put(unknownTerm, value);
+    }
+
+    /**
+     * Solve simultaneous equations between this {@code AlgebraicEquation} object and another {@code AlgebraicEquation}
+     * object, with a list of known variables, and a HashMap of their values, to be modified to include the solved
+     * values
+     * @param secondEquation a second {@code AlgebraicEquation} object to balance with {@code this} object
+     * @param knownTerms a list of known variables
+     * @param variables a HashMap of their values, to be modified to include the solved values
+     */
+    public void solveSimultaneousEquations(AlgebraicEquation secondEquation, List<String> knownTerms,
+                                           HashMap<String, Fraction> variables) {
         // Put all the equation to one side
-        HashMap<String, Fraction> firstEq = putTermsToOneSide(this, balancedVariables);
-        HashMap<String, Fraction> secondEq = putTermsToOneSide(secondEquation, balancedVariables);
+        HashMap<String, Fraction> firstEq = putTermsToOneSide(this, knownTerms);
+        HashMap<String, Fraction> secondEq = putTermsToOneSide(secondEquation, knownTerms);
 
 
         // Choose a variable to substitute out
-        String substitutedVariable = this.getUnknownTerms(balancedVariables).get(0);
-        String targetVariable = this.getUnknownTerms(balancedVariables).get(1);
+        String substitutedVariable = this.getUnknownTerms(knownTerms).get(0);
+        String targetVariable = this.getUnknownTerms(knownTerms).get(1);
 
         // Rearrange so that it is on the other side
         firstEq.put(substitutedVariable, firstEq.get(substitutedVariable).multiplyBy(
@@ -266,12 +432,12 @@ public class AlgebraicEquation {
 
         Fraction targetValue = Fraction.getFraction(0);
         for (HashMap.Entry<String, Fraction> term : thirdEq.entrySet()) {
-            targetValue = targetValue.add(term.getValue().multiplyBy(coefficientFractionValue.get(term.getKey())));
+            targetValue = targetValue.add(term.getValue().multiplyBy(variables.get(term.getKey())));
         }
 
-        balancedVariables.add(targetVariable);
-        coefficientFractionValue.put(targetVariable, targetValue);
-        solveSimpleSubstitution(coefficientFractionValue, balancedVariables);
+        knownTerms.add(targetVariable);
+        variables.put(targetVariable, targetValue);
+        solveSimpleSubstitution(variables, knownTerms);
     }
 
     private boolean shouldSubtractFirstEq(String targetVariable, HashMap<String, Fraction> firstEq,
@@ -280,7 +446,7 @@ public class AlgebraicEquation {
         return firstEq.get(targetVariable).compareTo(secondEq.get(targetVariable)) <= -1;
     }
 
-    public HashMap<String, Fraction> putTermsToOneSide(AlgebraicEquation eq, ArrayList<String> balancedVariables) {
+    private HashMap<String, Fraction> putTermsToOneSide(AlgebraicEquation eq, List<String> balancedVariables) {
         HashMap<String, Fraction> rearrangedTerms = new HashMap<>();
 
         // For the variables not moving
@@ -296,19 +462,6 @@ public class AlgebraicEquation {
         return rearrangedTerms;
     }
 
-    public static int lcm(int value1, int value2) {
-        return (value1 * value2) / gcd(value1, value2);
-    }
-
-    public static int lcm(ArrayList<Integer> values) {
-        int value = values.get(0);
-        for (int i : values) {
-            value = lcm(i, value);
-        }
-
-        return value;
-    }
-
     private static boolean areAllFractionsIntegers(HashMap<String, Fraction> coefficientFractionValues) {
         for (Fraction fraction : coefficientFractionValues.values()) {
             if (fraction.getDenominator() != 1) {
@@ -318,86 +471,74 @@ public class AlgebraicEquation {
         return true;
     }
 
+    /**
+     * Gets the {@link #terms} of the {@code AlgebraicEquation} object
+     * @return the {@link #terms} of the {@code AlgebraicEquation} object
+     */
     public ArrayList<String> getTerms() {
         return terms;
     }
 
+    /**
+     * Gets the {@link #firstSide} of the {@code AlgebraicEquation} object
+     * @return the {@link #firstSide} of the {@code AlgebraicEquation} object
+     */
     public HashMap<String, Integer> getFirstSide() {
         return firstSide;
     }
 
+    /**
+     * Gets the {@link #secondSide} of the {@code AlgebraicEquation} object
+     * @return the {@link #secondSide} of the {@code AlgebraicEquation} object
+     */
     public HashMap<String, Integer> getSecondSide() {
         return secondSide;
     }
 
+    /**
+     * Gets the {@link #equation} of the {@code AlgebraicEquation} object
+     * @return the {@link #equation} of the {@code AlgebraicEquation} object
+     */
+    public String getEquation() {
+        return equation;
+    }
+
+    /**
+     * Gets the {@link #equation} of the {@code AlgebraicEquation} object
+     * @return the {@link #equation} of the {@code AlgebraicEquation} object
+     */
     @Override
     public String toString() {
         return equation;
     }
 
-    public String getEquation() {
-        return equation;
-    }
+    /**
+     * An {@link ArrayList} of the terms of the {@code AlgebraicEquation} object. For example: {@code [A, B, C]}
+     */
+    protected ArrayList<String> terms = new ArrayList<>();
 
-    public void solveSimpleSubstitution(HashMap<String, Fraction> variables, ArrayList<String> knownTerms) {
-        Fraction[] sides = new Fraction[]{Fraction.getFraction(0), Fraction.getFraction(0)};
-        Fraction value;
-        boolean isUnknownOnFirstSide = false;
-        String unknownTerm = "";
+    /**
+     * A {@link String} representation of the {@code AlgebraicEquation} object. For example: {@code A + 2B = C}
+     */
+    protected String equation;
 
-        // Work out the value of the first side
-        // Iterate over every term
-        for (HashMap.Entry<String, Integer> term : this.firstSide.entrySet()) {
-            // If the value is known, add it to the side, after multiplying it by its coefficient
-            if (knownTerms.contains(term.getKey())) {
-                sides[0] = sides[0].add(variables.get(term.getKey()) // The value of the variable
-                        .multiplyBy(Fraction.getFraction(term.getValue()))); // Multiplied by coefficient
-            }
-            // If the value is unknown, the unknown is on the left side
-            else {
-                isUnknownOnFirstSide = true;
-                unknownTerm = term.getKey();
-            }
-        }
+    /**
+     * A {@link HashMap} of the first side of the {@code AlgebraicEquation} object. For example: {@code A + 2B}
+     */
+    protected HashMap<String, Integer> firstSide = new HashMap<>();
 
-        // Work out the value of the second side
-        // Iterate over every term
-        for (HashMap.Entry<String, Integer> term : this.secondSide.entrySet()) {
-            // If the value is known, add it to the side, after multiplying it by its coefficient
-            if (knownTerms.contains(term.getKey())) {
-                sides[1] = sides[1].add(variables.get(term.getKey()) // The value of the variable
-                        .multiplyBy(Fraction.getFraction(term.getValue()))); // Multiplied by coefficient
-            }
-            else {
-                isUnknownOnFirstSide = false;
-                unknownTerm = term.getKey();
-            }
-        }
+    /**
+     * A {@link HashMap} of the second side of the {@code AlgebraicEquation} object. For example: {@code C}
+     */
+    protected HashMap<String, Integer> secondSide = new HashMap<>();
 
-        // Subtract so that x = const, and then divide by the coefficient of x
-        // If x is on the first side
-        if (isUnknownOnFirstSide) {
-            // Subtract the first side from, the second
-            value = sides[1].subtract(sides[0]);
-            // Divide by the coefficient of x
-            value = value.divideBy(Fraction.getFraction(firstSide.get(unknownTerm)));
-        }
-        // Else x is on the second side
-        else {
-            // Subtract the second side from, the first
-            value = sides[0].subtract(sides[1]);
-            // Divide by the coefficient of x
-            value = value.divideBy(Fraction.getFraction(secondSide.get(unknownTerm)));
-        }
-
-        variables.put(unknownTerm, value);
-    }
-
-    private ArrayList<String> terms = new ArrayList<>();
-    private String equation;
-    private HashMap<String, Integer> firstSide = new HashMap<>();
-    private HashMap<String, Integer> secondSide = new HashMap<>();
-
+    /**
+     * A flag for constructing {@code AlgebraicEquation} objects, to throw an exception if terms are repeated
+     */
     public static final boolean WARN_ON_MULTIPLE_OCCURRENCES = true;
+
+    /**
+     * A flag for constructing {@code AlgebraicEquation} objects, not to throw an exceptions if terms are repeated
+     */
     public static final boolean DO_NOT_WARN_ON_MULTIPLE_OCCURRENCES = false;
 }
