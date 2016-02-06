@@ -21,6 +21,16 @@ public class Main {
         }
         else {
             try {
+                BigDecimal bd = new BigDecimal(BigInteger.valueOf(3926), 21);
+                System.out.println(bd);
+                System.out.println(bd.toEngineeringString());
+                System.out.println(bd.toEngineeringString().split("[Ee]")[1].substring(1));
+                Mass m = new Mass(5632.2103, Mass.Unit.ng);
+                System.out.println("\n" + m.getMassInGrams());
+                System.out.println(m.getMass(Mass.Unit.g).toEngineeringString());
+                System.out.println(m.getMass());
+
+
                 // A = 3, B = 12, C = 7, D = 0
                 AlgebraicEquation ag = new AlgebraicEquation("3C=1B+3A+2D");
                 AlgebraicEquation ag2 = new AlgebraicEquation("2B=3C+1A+2D");
