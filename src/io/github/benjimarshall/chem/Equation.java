@@ -2,9 +2,24 @@ package io.github.benjimarshall.chem;
 
 import org.apache.commons.lang3.math.Fraction;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
+/**
+ * Chemical equation. A {@code Equation} object consists of two maps, of its reactants and its products, with a string
+ * representation of it.
+ *
+ * @see AlgebraicEquation
+ */
 public class Equation {
+    /**
+     * Constructs an {@code Equation} object from a {@code String} representation of the equation
+     * @param equation {@code String} representation of the equation
+     * @throws NotationInterpretationException when the equation cannot be interpreted, or a constituent element cannot
+     * be parsed
+     */
     public Equation(String equation) throws NotationInterpretationException {
         // Clean out the whitespace
         equation = equation.replace(" ", "");
@@ -192,7 +207,13 @@ public class Equation {
         return elementMap;
     }
 
-    private void balance(HashMap<Molecule, Integer> reactants, HashMap<Molecule, Integer> products)
+    /**
+     * Attempt to balance the chemical equation
+     * @param reactants the reactants of the equation
+     * @param products the products of the equation
+     * @throws NotationInterpretationException when the equation cannot be balanced
+     */
+    protected void balance(HashMap<Molecule, Integer> reactants, HashMap<Molecule, Integer> products)
             throws NotationInterpretationException {
         Set<Element> elementSet = makeElementMap(reactants).keySet();
 
@@ -351,7 +372,7 @@ public class Equation {
                     balancedVariables.add(alEq.getUnknownTerms(balancedVariables).get(0));
                     doneSomethingThisTime = true;
                 }
-                // Else if all terms have been found, or there are more than 2 unknown terms, do nothingt
+                // Else if all terms have been found, or there are more than 2 unknown terms, do nothing
             }
 
             // If all of the values of the variables have been found, the process has finished
@@ -393,7 +414,15 @@ public class Equation {
         return finished;
     }
 
-    private boolean bruteBalance(HashMap<Molecule, Integer> reactants, HashMap<Molecule, Integer> products, int limit) {
+    /**
+     * Attempt to balance the equation using a brute force guessing method
+     * @param reactants the reactants of the equation
+     * @param products the products of the equation
+     * @param limit the maximum coefficient of any molecule
+     * @return if the equation has been successfully balanced
+     */
+    protected boolean bruteBalance(HashMap<Molecule, Integer> reactants, HashMap<Molecule, Integer> products,
+                                   int limit) {
         ArrayList<Molecule> orderedMolecules = new ArrayList<>();
         orderedMolecules.addAll(reactants.keySet());
         orderedMolecules.add(null);
@@ -440,8 +469,8 @@ public class Equation {
         return successful;
     }
 
-    private ArrayList<HashMap<Molecule, Integer>> coefficientsToEquation(HashMap<String, Molecule> moleculeCoefficients,
-                                                                        HashMap<String, Integer> coefficientValues) {
+    private ArrayList<HashMap<Molecule, Integer>> coefficientsToEquation(Map<String, Molecule> moleculeCoefficients,
+                                                                      Map<String, Integer> coefficientValues) {
         ArrayList<HashMap<Molecule, Integer>> sides = new ArrayList<>();
         sides.add(new HashMap<>());
 
@@ -472,24 +501,53 @@ public class Equation {
         return sides;
     }
 
+    /**
+     * Gets the {@code String} representation of the {@code Equation} object
+     * @return the {@code String} representation of the {@code Equation} object
+     * @see #equation
+     */
     @Override
     public String toString() {
         return this.getEquation();
     }
 
+    /**
+     * Gets the {@link #reactants} of {@code Equation} object
+     * @return the {@link #reactants} of {@code Equation} object
+     */
     public HashMap<Molecule, Integer> getReactants() {
         return reactants;
     }
 
+    /**
+     * Gets the {@link #reactants} of {@code Equation} object
+     * @return the {@link #reactants} of {@code Equation} object
+     */
     public HashMap<Molecule, Integer> getProducts() {
         return products;
     }
 
+    /**
+     * Gets the {@code String} representation of the {@code Equation} object
+     * @return the {@code String} representation of the {@code Equation} object
+     * @see #equation
+     */
     public String getEquation() {
         return equation;
     }
 
-    private String equation;
-    private HashMap<Molecule, Integer> reactants = new HashMap<>();
-    private HashMap<Molecule, Integer> products = new HashMap<>();
+    /**
+     * The {@code String} representation of the {@code Equation} object
+     */
+    protected String equation;
+
+    /**
+     * A {@link HashMap} of the reactants in the equation
+     */
+    protected HashMap<Molecule, Integer> reactants = new HashMap<>();
+
+    /**
+     * A {@link HashMap} of the products in the equation
+     */
+    protected HashMap<Molecule, Integer> products = new HashMap<>();
 }

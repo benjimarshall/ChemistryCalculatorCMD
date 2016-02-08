@@ -2,7 +2,11 @@ package io.github.benjimarshall.chem;
 
 import org.apache.commons.lang3.math.Fraction;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Algebraic Equation. A {@code AlgebraicEquation} object consists of a variable names and their coefficients, #
