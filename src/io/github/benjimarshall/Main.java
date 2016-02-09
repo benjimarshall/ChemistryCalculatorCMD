@@ -5,7 +5,6 @@ import org.apache.commons.lang3.math.Fraction;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -25,9 +24,9 @@ public class Main {
                 System.out.println(bd);
                 System.out.println(bd.toEngineeringString());
                 System.out.println(bd.toEngineeringString().split("[Ee]")[1].substring(1));
-                Mass m = new Mass(5632.2103, Mass.Unit.ng);
+                Mass m = new Mass(5632.2103, Mass.MetricUnit.ng);
                 System.out.println("\n" + m.getMassInGrams());
-                System.out.println(m.getMass(Mass.Unit.g).toEngineeringString());
+                System.out.println(m.getMass(Mass.MetricUnit.g).toEngineeringString());
                 System.out.println(m.getMass());
 
 
@@ -104,8 +103,8 @@ public class Main {
                 System.out.println("5 / 3 = " + mole.divide(mole1));
 
 
-                Mass mass = new Mass(BigDecimal.valueOf(3), Mass.Unit.tonne);
-                Mass mass1 = new Mass(3, Mass.Unit.g);
+                Mass mass = new Mass(BigDecimal.valueOf(3), Mass.MetricUnit.tonne);
+                Mass mass1 = new Mass(3, Mass.MetricUnit.g);
 
                 System.out.println("\n" + mass);
                 System.out.println("5 + 3 = " + mass.add(mass1));

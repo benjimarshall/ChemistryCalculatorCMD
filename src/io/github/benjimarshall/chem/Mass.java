@@ -6,72 +6,106 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.HashMap;
 
+/**
+ * Metric Mass. An immutable {@code Mass} object is a wrapper for the {@link BigDecimal} class with methods to convert
+ * between metric units of mass
+ * @see MetricUnit
+ */
 public class Mass {
 
     private Mass() {
 
     }
 
+    /**
+     * Makes a {@code Mass} object from a {@code BigDecimal} mass, with grams as the assumed {@code MetricUnit}
+     * @param mass a {@code BigDecimal} mass value
+     */
     public Mass(BigDecimal mass) {
+        // If no units are provided, assume grams so do nothing
         this.mass = mass;
     }
 
-    public Mass(BigDecimal mass , Unit units) {
-        this(mass.multiply(power(BigDecimal.TEN, getSIIndexFromMassUnit(units))));
+    /**
+     * Makes a {@code Mass} object from a {@code BigDecimal} mass, with provided {@code MetricUnit}
+     * @param mass a {@code BigDecimal} mass value
+     * @param units a {@code MetricUnit} of the passed value
+     */
+    public Mass(BigDecimal mass , MetricUnit units) {
+        this(mass.multiply(power(BigDecimal.TEN, getSIExponentFromMassUnit(units))));
     }
 
-    public Mass(double mass, Unit units) {
+    /**
+     * Makes a {@code Mass} object from a {@code double} mass, with provided {@code MetricUnit}
+     * @param mass a {@code double} mass value
+     * @param units a {@code MetricUnit} of the passed value
+     */
+    public Mass(double mass, MetricUnit units) {
         this(BigDecimal.valueOf(mass), units);
     }
 
-    // If no units are provided, assume grams so do nothing
+    /**
+     * Makes a {@code Mass} object from a {@code double} mass, with grams as the assumed {@code MetricUnit}
+     * @param mass a {@code double} mass value
+     */
     public Mass(double mass) {
+        // If no units are provided, assume grams so do nothing
         this(BigDecimal.valueOf(mass));
     }
 
+    /**
+     * Add this {@code Mass} object to the {@code Mass} parameter, and return a new {@code Mass} object of the resultant
+     * value
+     * @param mass the {@code Mass} object to add to this object
+     * @return a new {@code Mass} object of the resultant value
+     */
     public Mass add(Mass mass) {
         return new Mass(this.mass.add(mass.getMassInGrams()));
     }
 
+    /**
+     * Subtract the {@code Mass} parameter from this {@code Mass} object, and return a new {@code Mass} object of the
+     * resultant value
+     * @param mass the {@code Mass} object to subtract from this object
+     * @return a new {@code Mass} object of the resultant value
+     */
     public Mass subtract(Mass mass) {
         return new Mass(this.mass.subtract(mass.getMassInGrams()));
     }
 
+    /**
+     * Multiply this {@code Mass} object by the {@code Mass} parameter, and return a new {@code Mass} object of the
+     * resultant value
+     * @param mass the {@code Mass} object to multiply by this object
+     * @return a new {@code Mass} object of the resultant value
+     */
     public Mass multiply(Mass mass) {
         return new Mass(this.mass.multiply(mass.getMassInGrams()));
     }
 
+    /**
+     * Divide this {@code Mass} object by the {@code Mass} parameter, and return a new {@code Mass} object of the
+     * resultant value
+     * @param mass the {@code Mass} object to divide this object by
+     * @return a new {@code Mass} object of the resultant value
+     */
     public Mass divide(Mass mass) {
         return new Mass(this.mass.divide(mass.getMassInGrams(), MathContext.DECIMAL32));
     }
 
+    /**
+     * Gets the {@link #mass} of the {@code Mass} object in grams
+     * @return the {@link #mass} of the {@code Mass} object in grams
+     */
     public BigDecimal getMassInGrams() {
         return this.mass;
     }
 
+    /**
+     * Generates a {@code String} representation of the {@code Mass} object with appropriate units
+     * @return a {@code String} representation of the {@code Mass} object with appropriate units
+     */
     public String getMass() {
-        // Broken
-        /*
-        String engineeringString = mass.toEngineeringString();
-        String[] components = engineeringString.split("[Ee]");
-
-
-        if (components[1].charAt(0) == '+') {
-            components[1] = components[1].substring(1);
-        }
-
-        if (Integer.parseInt(components[1]) > 24) {
-            return (new BigDecimal(BigInteger.valueOf((long) Double.parseDouble(components[0])),
-                    Integer.parseInt(components[1]) - 24)).multiply(BigDecimal.TEN.pow(-24));
-        }
-        else if (Integer.parseInt(components[1]) < -24) {
-            return null;
-        }
-        else {
-            return (new BigDecimal(components[0])).multiply(BigDecimal.valueOf(Double.parseDouble(components[1])));
-        }*/
-
-
         // Find engineering exponent
         int exponent = -24;
         BigDecimal newMass;
@@ -98,14 +132,25 @@ public class Mass {
             }
         }
 
-        return newMass.toEngineeringString() + " " +  SI_VALUE_UNITS.get(exponent).name();
+        return newMass.toEngineeringString() + " " +  SI_EXPONENT_UNITS.get(exponent).name();
     }
 
-    public BigDecimal getMass(Unit targetUnit) {
-        return mass.divide(power(BigDecimal.TEN, SI_UNIT_VALUES.get(targetUnit)), MathContext.DECIMAL64);
+    /**
+     * Generates the {@code BigDecimal} object with the value of the {@link #mass} with the given units
+     * @param targetUnit the desired units for the value
+     * @return the {@code BigDecimal} object with the value of the mass with the given units
+     */
+    public BigDecimal getMass(MetricUnit targetUnit) {
+        return mass.divide(power(BigDecimal.TEN, SI_UNIT_EXPONENTS.get(targetUnit)), MathContext.DECIMAL64);
     }
 
-
+    /**
+     * Calculates the value of the base to the power of n, a power method for {@code BigDecimal} to accept negative
+     * exponents
+     * @param base base of the expression to be evaluated
+     * @param n exponent of the expression to be evaluated
+     * @return a {@code BigDecimal} object with the value of the base to the power of n
+     */
     public static BigDecimal power(BigDecimal base, int n) {
         if (n < 0) {
             return BigDecimal.ONE.divide(base.pow(n * -1), MathContext.DECIMAL128);
@@ -115,48 +160,165 @@ public class Mass {
         }
     }
 
+    /**
+     * Generates a {@code String} representation of the {@code Mass} object with appropriate units. A wrapper for the
+     * {@link #getMass()} method
+     * @return a {@code String} representation of the {@code Mass} object with appropriate units
+     */
     @Override
     public String toString() {
         return this.getMass();
     }
 
-    public enum Unit {
-        Yg, Zg, Eg, Pg, Tg, Gg, Mg, tonne, mt, kg, g, mg, µg, ng, pg, fg, ag, zg, yg
+    /**
+     * Metric Units of Mass
+     */
+    public enum MetricUnit {
+        /**
+         * Yottagram 10<sup>24</sup>g
+         */
+        Yg,
+
+        /**
+         * Zettagram 10<sup>21</sup>g
+         */
+        Zg,
+
+        /**
+         * Exagram 10<sup>18</sup>g
+         */
+        Eg,
+
+        /**
+         * Petagram 10<sup>15</sup>g
+         */
+        Pg,
+
+        /**
+         * Teragram 10<sup>12</sup>g
+         */
+        Tg,
+
+        /**
+         * Gigagram 10<sup>9</sup>g
+         */
+        Gg,
+
+        /**
+         * Megagram 10<sup>6</sup>g
+         */
+        Mg,
+
+        /**
+         * Tonne 10<sup>6</sup>g
+         */
+        tonne,
+
+
+        /**
+         * Metric tonne 10<sup>6</sup>g
+         */
+        mt,
+
+        /**
+         * Kilogram 10<sup>3</sup>g
+         */
+        kg,
+
+        /**
+         * Gram 10<sup>0</sup>g
+         */
+        g,
+
+        /**
+         * Milligram 10<sup>-3</sup>g
+         */
+        mg,
+
+        /**
+         * Microgram 10<sup>-6</sup>g
+         */
+        µg,
+
+        /**
+         * Nanogram 10<sup>-9</sup>g
+         */
+        ng,
+
+        /**
+         * Picogram 10<sup>-12</sup>g
+         */
+        pg,
+
+        /**
+         * Femtogram 10<sup>-15</sup>g
+         */
+        fg,
+
+        /**
+         * Attogram 10<sup>-18</sup>g
+         */
+        ag,
+
+        /**
+         * Zeptogram 10<sup>-21</sup>g
+         */
+        zg,
+
+        /**
+         * Yoctogram 10<sup>-24</sup>g
+         */
+        yg
     }
 
-    public static int getSIIndexFromMassUnit(Unit unit) {
-        return SI_UNIT_VALUES.get(unit);
+    /**
+     * Gets the exponent for the base 10, relative to grams, from a {@code Unit}
+     * @param unit {@code Unit} to find the exponent of
+     * @return the exponent for the base 10, relative to grams
+     */
+    public static int getSIExponentFromMassUnit(MetricUnit unit) {
+        return SI_UNIT_EXPONENTS.get(unit);
     }
 
-    private static HashMap<Unit, Integer> SI_UNIT_VALUES = new HashMap<>();
-    private static HashMap<Integer, Unit> SI_VALUE_UNITS = new HashMap<>();
+    /**
+     * A map of exponents with {@code Unit} items as keys
+     */
+    protected static HashMap<MetricUnit, Integer> SI_UNIT_EXPONENTS = new HashMap<>();
+
+    /**
+     * A map of {@code Unit} items of with exponents as keys
+     */
+    protected static HashMap<Integer, MetricUnit> SI_EXPONENT_UNITS = new HashMap<>();
     static {
-        SI_UNIT_VALUES.put(Unit.Yg, 24);
-        SI_UNIT_VALUES.put(Unit.Zg, 21);
-        SI_UNIT_VALUES.put(Unit.Eg, 18);
-        SI_UNIT_VALUES.put(Unit.Pg, 15);
-        SI_UNIT_VALUES.put(Unit.Tg, 12);
-        SI_UNIT_VALUES.put(Unit.Gg, 9);
-        SI_UNIT_VALUES.put(Unit.tonne, 6);
-        SI_UNIT_VALUES.put(Unit.mt, 6);
-        SI_UNIT_VALUES.put(Unit.Mg, 6);
-        SI_UNIT_VALUES.put(Unit.kg, 3);
-        SI_UNIT_VALUES.put(Unit.g, 0);
-        SI_UNIT_VALUES.put(Unit.mg, -3);
-        SI_UNIT_VALUES.put(Unit.µg, -6);
-        SI_UNIT_VALUES.put(Unit.ng, -9);
-        SI_UNIT_VALUES.put(Unit.pg, -12);
-        SI_UNIT_VALUES.put(Unit.fg, -15);
-        SI_UNIT_VALUES.put(Unit.ag, -18);
-        SI_UNIT_VALUES.put(Unit.zg, -21);
-        SI_UNIT_VALUES.put(Unit.yg, -24);
+        SI_UNIT_EXPONENTS.put(MetricUnit.Yg, 24);
+        SI_UNIT_EXPONENTS.put(MetricUnit.Zg, 21);
+        SI_UNIT_EXPONENTS.put(MetricUnit.Eg, 18);
+        SI_UNIT_EXPONENTS.put(MetricUnit.Pg, 15);
+        SI_UNIT_EXPONENTS.put(MetricUnit.Tg, 12);
+        SI_UNIT_EXPONENTS.put(MetricUnit.Gg, 9);
+        SI_UNIT_EXPONENTS.put(MetricUnit.tonne, 6);
+        SI_UNIT_EXPONENTS.put(MetricUnit.mt, 6);
+        SI_UNIT_EXPONENTS.put(MetricUnit.Mg, 6);
+        SI_UNIT_EXPONENTS.put(MetricUnit.kg, 3);
+        SI_UNIT_EXPONENTS.put(MetricUnit.g, 0);
+        SI_UNIT_EXPONENTS.put(MetricUnit.mg, -3);
+        SI_UNIT_EXPONENTS.put(MetricUnit.µg, -6);
+        SI_UNIT_EXPONENTS.put(MetricUnit.ng, -9);
+        SI_UNIT_EXPONENTS.put(MetricUnit.pg, -12);
+        SI_UNIT_EXPONENTS.put(MetricUnit.fg, -15);
+        SI_UNIT_EXPONENTS.put(MetricUnit.ag, -18);
+        SI_UNIT_EXPONENTS.put(MetricUnit.zg, -21);
+        SI_UNIT_EXPONENTS.put(MetricUnit.yg, -24);
 
-        for (HashMap.Entry<Unit, Integer> entry : SI_UNIT_VALUES.entrySet()) {
-            SI_VALUE_UNITS.put(entry.getValue(), entry.getKey());
+        for (HashMap.Entry<MetricUnit, Integer> entry : SI_UNIT_EXPONENTS.entrySet()) {
+            SI_EXPONENT_UNITS.put(entry.getValue(), entry.getKey());
         }
-        SI_UNIT_VALUES.put(Unit.mt, 6);
+        SI_UNIT_EXPONENTS.put(MetricUnit.mt, 6);
     }
 
     // Mass in g
-    private BigDecimal mass;
+    /**
+     * A {@code BigDecimal} object with the value of the mass in grams
+     */
+    protected BigDecimal mass;
 }
