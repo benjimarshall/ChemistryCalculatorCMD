@@ -90,7 +90,7 @@ public class Mass {
      * @return a new {@code Mass} object of the resultant value
      */
     public Mass divide(Mass mass) {
-        return new Mass(this.mass.divide(mass.getMassInGrams(), MathContext.DECIMAL32));
+        return new Mass(this.mass.divide(mass.getMassInGrams(), MathContext.DECIMAL64));
     }
 
     /**
@@ -132,7 +132,7 @@ public class Mass {
             }
         }
 
-        return newMass.toEngineeringString() + " " +  SI_EXPONENT_UNITS.get(exponent).name();
+        return newMass.round(new MathContext(3)).toEngineeringString() +  SI_EXPONENT_UNITS.get(exponent).name();
     }
 
     /**

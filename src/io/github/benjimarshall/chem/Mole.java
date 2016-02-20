@@ -65,7 +65,7 @@ public class Mole {
      * @return a new {@code Mole} object of the resultant value
      */
     public Mole divide(Mole mole) {
-        return new Mole(this.quantity.divide(mole.getQuantity(), MathContext.DECIMAL32));
+        return new Mole(this.quantity.divide(mole.getQuantity(), MathContext.DECIMAL64));
     }
 
     /**
@@ -84,7 +84,7 @@ public class Mole {
      */
     @Override
     public String toString() {
-        return this.quantity.toString() + "mol";
+        return this.quantity.round(new MathContext(3)).toEngineeringString() + "mol";
     }
 
     /**

@@ -1,5 +1,7 @@
 package io.github.benjimarshall.chem;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -44,9 +46,10 @@ public class Molecule {
             this.elementMap = parseFormula(formula);
 
             // Calculate the relative formula mass by adding up the relative masses multiplied by the number of atoms
-            this.relativeFormulaMass = 0;
+            this.relativeFormulaMass = BigDecimal.ZERO;
             for (HashMap.Entry<Element, Integer> entry : this.elementMap.entrySet()) {
-                this.relativeFormulaMass += entry.getValue() * entry.getKey().getMassNumber();
+                this.relativeFormulaMass = this.relativeFormulaMass.add(entry.getKey().getMassNumber().multiply(
+                        new BigDecimal(BigInteger.valueOf(entry.getValue()))));
             }
         } catch (IndexOutOfBoundsException e) {
             throw new NotationInterpretationException("Capital letter expected after number");
@@ -204,7 +207,7 @@ public class Molecule {
             }
         }
 
-        return Double.compare(molecule.getRelativeFormulaMass(), getRelativeFormulaMass()) == 0 &&
+        return molecule.getRelativeFormulaMass().compareTo(getRelativeFormulaMass()) == 0 &&
                 getFormula().equals(molecule.getFormula());
     }
 
@@ -217,7 +220,7 @@ public class Molecule {
         int result;
         long temp;
         result = getFormula().hashCode();
-        temp = Double.doubleToLongBits(getRelativeFormulaMass());
+        temp = Double.doubleToLongBits(getRelativeFormulaMass().doubleValue());
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
@@ -277,7 +280,7 @@ public class Molecule {
      * Gets the {@link #relativeFormulaMass} of the {@code Molecule} object
      * @return the {@link #relativeFormulaMass} of the {@code Molecule} object
      */
-    public double getRelativeFormulaMass() {
+    public BigDecimal getRelativeFormulaMass() {
         return relativeFormulaMass;
     }
 
@@ -294,8 +297,8 @@ public class Molecule {
 
     /**
      * The {@code Molecule} object's relative formula mass. For example: {@code HNO3} has a relative formula mass of
-     * {@code 63.01284}
+     * {@code 63.0}
      */
-    protected double relativeFormulaMass;
+    protected BigDecimal relativeFormulaMass;
 }
 

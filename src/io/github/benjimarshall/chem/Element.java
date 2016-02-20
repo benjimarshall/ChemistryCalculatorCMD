@@ -4,6 +4,8 @@ import com.opencsv.CSVReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 /**
@@ -101,7 +103,7 @@ public class Element {
      * @see #atomicNumber
      * @see #massNumber
      */
-    public Element(String symbol, String name, int atomicNumber, double massNumber) {
+    public Element(String symbol, String name, int atomicNumber, BigDecimal massNumber) {
         this.symbol = symbol;
         this.name = name;
         this.atomicNumber = atomicNumber;
@@ -120,7 +122,7 @@ public class Element {
 
         Element element = (Element) o;
 
-        return Double.compare(element.getMassNumber(), getMassNumber()) == 0 &&
+        return element.getMassNumber().compareTo(getMassNumber()) == 0 &&
                 getAtomicNumber() == element.getAtomicNumber() &&
                 getSymbol().equals(element.getSymbol()) &&
                 getName().equals(element.getName());
@@ -136,7 +138,7 @@ public class Element {
         long temp;
         result = getSymbol().hashCode();
         result = 31 * result + getName().hashCode();
-        temp = Double.doubleToLongBits(getMassNumber());
+        temp = Double.doubleToLongBits(getMassNumber().doubleValue());
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + getAtomicNumber();
         return result;
@@ -163,7 +165,7 @@ public class Element {
      * Gets the {@code Element} object's {@link #massNumber}
      * @return the {@code Element} object's {@link #massNumber}
      */
-    public double getMassNumber() {
+    public BigDecimal getMassNumber() {
         return massNumber;
     }
 
@@ -197,10 +199,10 @@ public class Element {
     /**
      * The atomic number of the {@code Element} object. For example: {@code 11}
      */
-    protected double massNumber;
+    protected BigDecimal massNumber;
 
     /**
-     * The relative atomic mass of the {@code Element} object. For example: {@code 22.9898}
+     * The relative atomic mass of the {@code Element} object. For example: {@code 23.0}
      */
     protected int atomicNumber;   // Eg. 11
 
@@ -233,7 +235,7 @@ public class Element {
                         line[1], // Symbol
                         line[2], // Name
                         Integer.parseInt(line[0]), // Atomic Number
-                        Double.parseDouble(line[3]) // Mass Number
+                        BigDecimal.valueOf(Double.parseDouble(line[3])).setScale(1, RoundingMode.HALF_UP) // Mass Number
                 ));
             }
             r.close();
