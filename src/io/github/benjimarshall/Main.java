@@ -5,6 +5,7 @@ import org.apache.commons.lang3.math.Fraction;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -111,6 +112,17 @@ public class Main {
                 System.out.println("5 - 3 = " + mass.subtract(mass1));
                 System.out.println("5 * 3 = " + mass.multiply(mass1));
                 System.out.println("5 / 3 = " + mass.divide(mass1));
+
+                Substance sub = new Substance("H2O", new Mass(new BigDecimal(BigInteger.valueOf(6L))));
+                System.out.println("\n" + sub.toString());
+                System.out.println(sub.getMass());
+                System.out.println(sub.getMoles());
+
+                Substance sub2 = new Substance("H2O", new Mole(new BigDecimal((0.5))));
+                System.out.println("\n" + sub2.toString());
+                System.out.println(sub2.getMass());
+                System.out.println(sub2.getMoles());
+
 
             } catch (ArithmeticException | FlagException | NotationInterpretationException e) {
                 System.out.println("Something went wrong: " + e.getMessage());
