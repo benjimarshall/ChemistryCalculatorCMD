@@ -24,12 +24,12 @@ public class Molecule {
      */
     public Molecule(String formula) throws NotationInterpretationException {
         // A more explanatory error for finding symbol characters
-        if (!formula.matches("[a-zA-Z0-9\\(\\)]*")) {
+        if (!formula.matches(ACCEPTED_LETTERS_AND_SYMBOLS_REGEX)) {
             throw new NotationInterpretationException("Formula contained non-letter, non-digit characters");
         }
 
         // Check to see if the formula is in a valid format
-        if (!formula.matches("([\\(]?[A-Z][a-z]?\\d*(\\)\\d*)?)+")) {
+        if (!formula.matches(MOLECULE_REGEX)) {
             throw new NotationInterpretationException("Formula did meet notation standards of capital letters, lower" +
                     "case letters and numbers");
         }
@@ -283,6 +283,19 @@ public class Molecule {
     public BigDecimal getRelativeFormulaMass() {
         return relativeFormulaMass;
     }
+
+    /**
+     * A regex pattern of the accepted letters and symbols in the {@code String} representation a {@code Molecule}
+     * object.
+     * @see java.util.regex.Pattern
+     */
+    public static final String ACCEPTED_LETTERS_AND_SYMBOLS_REGEX = "[a-zA-Z0-9\\(\\)]*";
+
+    /**
+     * A regex pattern of the accepted format of the {@code String} representation a {@code Molecule} object.
+     * @see java.util.regex.Pattern
+     */
+    public static final String MOLECULE_REGEX = "([\\(]?" + Element.ELEMENT_REGEX + "\\d*(\\)\\d*)?)+";
 
     /**
      * The {@code Molecule} object's formula. For example: {@code HNO3}

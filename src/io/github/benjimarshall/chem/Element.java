@@ -43,7 +43,7 @@ public class Element {
 
         if (flag == SYMBOL) {
             // Check if the name looks valid
-            if (!name.matches("[A-Z][a-z]?")) {
+            if (!name.matches(ELEMENT_REGEX)) {
                 throw new NotationInterpretationException("Symbol did not meet notation standards of capital letters " +
                         "and lower case letters: " + name);
             }
@@ -204,7 +204,7 @@ public class Element {
     /**
      * The relative atomic mass of the {@code Element} object. For example: {@code 23.0}
      */
-    protected int atomicNumber;   // Eg. 11
+    protected int atomicNumber;
 
     /**
      * A flag for the {@link #Element(String, int)} constructor, for when the element's symbol is passed
@@ -215,6 +215,12 @@ public class Element {
      * A flag for the {@link #Element(String, int)} constructor, for when the element's name is passed
      */
     public static final int NAME = 1;
+
+    /**
+     * A regex pattern of the accepted format of the {@code String} representation a {@code Element} object.
+     * @see java.util.regex.Pattern
+     */
+    public static final String ELEMENT_REGEX = "[A-Z][a-z]?";
 
     /**
      * A periodic table generated from a csv resource file

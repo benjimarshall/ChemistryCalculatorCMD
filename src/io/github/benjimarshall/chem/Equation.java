@@ -28,8 +28,7 @@ public class Equation {
 
         // Check that the equation is in a valid format
         // Add coefficients to numbers
-        if (!equation.matches("(\\d*([\\(]?[A-Z][a-z]?\\d*(\\)\\d*)?)+)(\\+(\\d*([\\(]?[A-Z][a-z]?\\d*(\\)\\d*)?)+))*>" +
-                "(\\d*([\\(]?[A-Z][a-z]?\\d*(\\)\\d*)?)+)(\\+(\\d*([\\(]?[A-Z][a-z]?\\d*(\\)\\d*)?)+))*")) {
+        if (!equation.matches(EQUATION_REGEX)) {
             throw new NotationInterpretationException("Equation did not meet notation standards");
         }
 
@@ -550,4 +549,17 @@ public class Equation {
      * A {@link HashMap} of the products in the equation
      */
     protected HashMap<Molecule, Integer> products = new HashMap<>();
+
+    /**
+     * A regex pattern of the accepted format of one side of the {@code String} representation a {@code Equation} object
+     * @see java.util.regex.Pattern
+     */
+    public static final String EQUATION_SIDE_REGEX = "(\\d*" + Molecule.MOLECULE_REGEX + ")(\\+(\\d*" +
+            Molecule.MOLECULE_REGEX + "))*";
+
+    /**
+     * A regex pattern of the accepted format of the {@code String} representation a {@code Equation} object.
+     * @see java.util.regex.Pattern
+     */
+    public static final String EQUATION_REGEX = EQUATION_SIDE_REGEX + ">" + EQUATION_SIDE_REGEX;
 }
