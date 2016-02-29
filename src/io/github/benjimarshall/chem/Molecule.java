@@ -196,19 +196,13 @@ public class Molecule {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Molecule)) return false;
 
         Molecule molecule = (Molecule) o;
 
-        for (HashMap.Entry<Element, Integer> elementEntry : this.elementMap.entrySet()) {
-            Integer quantity = ((Molecule) o).getElementMap().get(elementEntry.getKey());
-            if (quantity == null || !quantity.equals(elementEntry.getValue())) {
-                return false;
-            }
-        }
+        return getFormula().equals(molecule.getFormula()) && getElementMap().equals(molecule.getElementMap()) &&
+                getRelativeFormulaMass().equals(molecule.getRelativeFormulaMass());
 
-        return molecule.getRelativeFormulaMass().compareTo(getRelativeFormulaMass()) == 0 &&
-                getFormula().equals(molecule.getFormula());
     }
 
     /**
@@ -217,11 +211,9 @@ public class Molecule {
      */
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = getFormula().hashCode();
-        temp = Double.doubleToLongBits(getRelativeFormulaMass().doubleValue());
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        int result = getFormula().hashCode();
+        result = 31 * result + getElementMap().hashCode();
+        result = 31 * result + getRelativeFormulaMass().hashCode();
         return result;
     }
 

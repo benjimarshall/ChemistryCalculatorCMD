@@ -118,14 +118,12 @@ public class Element {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Element)) return false;
 
         Element element = (Element) o;
 
-        return element.getMassNumber().compareTo(getMassNumber()) == 0 &&
-                getAtomicNumber() == element.getAtomicNumber() &&
-                getSymbol().equals(element.getSymbol()) &&
-                getName().equals(element.getName());
+        return getAtomicNumber() == element.getAtomicNumber() && getSymbol().equals(element.getSymbol()) &&
+                getName().equals(element.getName()) && getMassNumber().equals(element.getMassNumber());
     }
 
     /**
@@ -134,16 +132,12 @@ public class Element {
      */
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = getSymbol().hashCode();
+        int result = getSymbol().hashCode();
         result = 31 * result + getName().hashCode();
-        temp = Double.doubleToLongBits(getMassNumber().doubleValue());
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + getMassNumber().hashCode();
         result = 31 * result + getAtomicNumber();
         return result;
     }
-
 
     /**
      * Gets the {@code Element} object's {@link #symbol}
