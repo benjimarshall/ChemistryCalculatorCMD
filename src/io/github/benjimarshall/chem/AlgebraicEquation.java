@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Algebraic Equation. A {@code AlgebraicEquation} object consists of a variable names and their coefficients, #
- * for each side.
+ * Algebraic Equation. A {@code AlgebraicEquation} object consists of a variable names and their coefficients, for each
+ * side.
  *
- * <p>WARNING: THIS CLASS WAS DESIGNED FOR {@link Equation} BALANCING, SO IT ONLY WORKS WITH VARIABLES BEING
+ * <p>WARNING: THIS CLASS WAS DESIGNED FOR CHEMICAL {@link Equation} BALANCING, SO IT ONLY WORKS WITH VARIABLES BEING
  * ADDED ON EITHER SIDE OF THE EQUATION, WITH OPTIONAL INTEGER COEFFICIENTS OF THE VARIABLE. THERE IS NO PROVISION FOR
  * SUBTRACTION, MULTIPLICATION, DIVISION, OR NON-VARIABLE VALUES.</p>
  *
@@ -46,7 +46,7 @@ public class AlgebraicEquation {
         // Clean out the whitespace
         equation = equation.replace(" ", "");
 
-        if (!equation.matches("\\d*[A-Z]+(\\+\\d*[A-Z]+)*=\\d*[A-Z]+(\\+\\d*[A-Z]+)*")) {
+        if (!equation.matches(ALGEBRAIC_EQUATION_REGEX)) {
             throw new NotationInterpretationException("Algebraic equation didn't meet notation standards");
         }
 
@@ -515,6 +515,21 @@ public class AlgebraicEquation {
     public String toString() {
         return equation;
     }
+
+    /**
+     * A regex pattern of the accepted format of one side of the {@code String} representation a
+     * {@code AlgebraicEquation} object.
+     * @see java.util.regex.Pattern
+     */
+    public static final String ALGEBRAIC_EQUATION_SIDE_REGEX = "\\d*[A-Z]+(\\+\\d*[A-Z]+)*";
+
+    /**
+     * A regex pattern of the accepted format of the {@code String} representation a {@code AlgebraicEquation} object.
+     * @see java.util.regex.Pattern
+     */
+    public static final String ALGEBRAIC_EQUATION_REGEX = ALGEBRAIC_EQUATION_SIDE_REGEX + "=" +
+            ALGEBRAIC_EQUATION_SIDE_REGEX;
+
 
     /**
      * An {@link ArrayList} of the terms of the {@code AlgebraicEquation} object. For example: {@code [A, B, C]}
