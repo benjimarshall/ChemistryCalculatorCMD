@@ -503,6 +503,12 @@ public class Equation {
         return sides;
     }
 
+    /**
+     * Gets the fraction of the products that a particular product occupies, a metric of reaction efficiency
+     * @param product the product which the proportion of the reactants will be found for
+     * @return the fraction of the products that a particular product occupies, from 0 to 1, to 5 significant figures
+     * @throws IllegalArgumentException when the {@code Molecule} object is not a product
+     */
     public BigDecimal atomEconomy(Molecule product) throws IllegalArgumentException {
         // If the molecule passed is not a product, then the atom economy cannot be found
         if (!this.products.keySet().contains(product)) {
