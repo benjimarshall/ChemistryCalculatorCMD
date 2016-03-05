@@ -80,6 +80,24 @@ public class Main {
                     System.out.println(entry.getKey().getName() + ": " + entry.getValue());
                 }
                 System.out.println("RFM: " + molecule.getRelativeFormulaMass());
+                System.out.println("Empirical formula: " + molecule.getEmpiricalFormula());
+
+                HashMap<Element, Integer> elementMap = new HashMap<>();
+                elementMap.put(new Element("C", Element.SYMBOL), 1);
+                elementMap.put(new Element("O", Element.SYMBOL), 2);
+                System.out.println(elementMap);
+                Molecule molecule1 = new Molecule(elementMap);
+                System.out.println(molecule1 + ", RFM: " + molecule1.getRelativeFormulaMass());
+                System.out.println("Empirical formula: " + molecule1.getEmpiricalFormula());
+
+                Molecule molecule2 = new Molecule("C4H8");
+                System.out.println("Molecule from: \"C4H8\"");
+                for (HashMap.Entry<Element, Integer> entry : molecule2.getElementMap().entrySet()) {
+                    System.out.println(entry.getKey().getName() + ": " + entry.getValue());
+                }
+                System.out.println("RFM: " + molecule2.getRelativeFormulaMass());
+                System.out.println("Empirical formula: " + molecule2.getEmpiricalFormula());
+
 
                 Equation equation = new Equation("C2H6 + O2 -> CO2 + H2O");
                 System.out.println(equation);

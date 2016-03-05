@@ -2,6 +2,7 @@ package io.github.benjimarshall.chem;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -53,6 +54,33 @@ public class Molecule {
             }
         } catch (IndexOutOfBoundsException e) {
             throw new NotationInterpretationException("Capital letter expected after number");
+        }
+    }
+
+    /**
+     * Make a {@code Molecule} object using a {@code HashMap} of {@link Element} objects with integer quantities
+     * @param elementMap a {@code HashMap} of {@link Element} objects with integer quantities
+     */
+    public Molecule(HashMap<Element, Integer> elementMap) {
+        this.elementMap = new HashMap<>();
+        this.elementMap.putAll(elementMap);
+
+        // Calculate the relative formula mass by adding up the relative masses multiplied by the number of atoms,
+        // And generate the formula by adding the symbol then the quantity after it to a string
+        // All by iterating over the elementMap
+        this.relativeFormulaMass = BigDecimal.ZERO;
+        this.formula = "";
+        for (HashMap.Entry<Element, Integer> entry : this.elementMap.entrySet()) {
+            System.out.println(entry.getKey());
+            // Calculate next bit of the RFM
+            this.relativeFormulaMass = this.relativeFormulaMass.add(entry.getKey().getMassNumber().multiply(
+                    new BigDecimal(BigInteger.valueOf(entry.getValue()))));
+
+            // Generate next bit of the formula
+            this.formula += entry.getKey().toString();
+            if (entry.getValue() != 1) {
+                this.formula += entry.getValue();
+            }
         }
     }
 
@@ -186,6 +214,20 @@ public class Molecule {
      */
     private static boolean isMatchingNumberOfBrackets(String s) {
         return s.replaceAll("[^\\(]", "").length() == s.replaceAll("[^\\)]", "").length();
+    }
+
+    /**
+     * Generates the Empirical Formula of the {@code Molecule} object; the simplest ratio of atoms
+     * @return the Empirical Formula of the {@code Molecule} object
+     */
+    public Molecule getEmpiricalFormula() {
+        int divisor = AlgebraicEquation.gcd(new ArrayList<>(this.elementMap.values()));
+        HashMap<Element, Integer> empiricalElementMap = new HashMap<>();
+        for (HashMap.Entry<Element, Integer> element : this.elementMap.entrySet()) {
+            empiricalElementMap.put(element.getKey(), (element.getValue() / divisor));
+        }
+
+        return new Molecule(empiricalElementMap);
     }
 
     /**
