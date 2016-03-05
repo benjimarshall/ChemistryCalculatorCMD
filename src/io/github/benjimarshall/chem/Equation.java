@@ -2,6 +2,9 @@ package io.github.benjimarshall.chem;
 
 import org.apache.commons.lang3.math.Fraction;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -498,6 +501,27 @@ public class Equation {
         }
 
         return sides;
+    }
+
+    public BigDecimal atomEconomy(Molecule product) throws IllegalArgumentException {
+        // If the molecule passed is not a product, then the atom economy cannot be found
+        if (!this.products.keySet().contains(product)) {
+            throw new IllegalArgumentException("Product not found");
+        }
+
+        // Find the total RFM of all of the reactants
+        BigDecimal total = BigDecimal.ZERO;
+        for (HashMap.Entry<Molecule, Integer> reactant : this.reactants.entrySet()) {
+            // Find the overall RFM of the Molecule by multiplying its RFM by its quantity
+            BigDecimal reactantOverallRFM = reactant.getKey().getRelativeFormulaMass().multiply(
+                    new BigDecimal(reactant.getValue()));
+            // Add it to the total
+            total = total.add(reactantOverallRFM);
+        }
+
+        // Find the quantity of the desired product
+        BigDecimal targetMoleculeRFM = product.getRelativeFormulaMass().multiply(new BigDecimal(products.get(product)));
+        return targetMoleculeRFM.divide(total, new MathContext(5, RoundingMode.HALF_UP));
     }
 
     /**

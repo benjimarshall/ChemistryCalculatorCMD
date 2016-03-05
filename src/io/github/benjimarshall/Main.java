@@ -83,16 +83,22 @@ public class Main {
 
                 Equation equation = new Equation("C2H6 + O2 -> CO2 + H2O");
                 System.out.println(equation);
+                System.out.println("Atom Economy of CO2: " + equation.atomEconomy(new Molecule("CO2")));
                 Equation equation1 = new Equation("N2 + H2 + H2 + H2 -> NH3 + NH3");
                 System.out.println(equation1);
+                System.out.println("Atom Economy of NH3: " + equation1.atomEconomy(new Molecule("NH3")));
                 Equation equation2 = new Equation("N2 + H2 -> NH3");
                 System.out.println(equation2);
+                System.out.println("Atom Economy of NH3: " + equation2.atomEconomy(new Molecule("NH3")));
                 Equation equation3 = new Equation("C + O2 -> CO2");
                 System.out.println(equation3);
+                System.out.println("Atom Economy of CO2: " + equation3.atomEconomy(new Molecule("CO2")));
                 Equation equation4 = new Equation("S + HNO3 -> H2SO4 + NO2 + H2O");
                 System.out.println(equation4);
+                System.out.println("Atom Economy of NO2: " + equation4.atomEconomy(new Molecule("NO2")));
                 Equation equation5 = new Equation("C2H6 + O2 -> CO2 + H2O + C");
-                System.out.println(equation5 + "\n\n");
+                System.out.println(equation5);
+                System.out.println("Atom Economy of C: " + equation5.atomEconomy(new Molecule("C")) + "\n\n");
 
                 Mole mole = new Mole(5.0);
                 Mole mole1 = new Mole(3);
