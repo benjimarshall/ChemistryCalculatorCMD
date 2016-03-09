@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
- * Chemical Molecule. A {@code Molecule} object consists of its constituent {@code Element} objects, and their rations,
- * and its relative formula mass
+ * Chemical Molecule. A {@code Molecule} object consists of its constituent {@code Element} objects, their ratios,
+ * and the {@code Molecule} object's relative formula mass
  *
  * @author Benji Marshall
  * @since 2016-2-4
@@ -231,7 +231,7 @@ public class Molecule {
     }
 
     /**
-     * A custom equals method, to compare elements
+     * Compares the parameter to this object, returning true if they are equal.
      * @param o the object to compare to this {@code Molecule} object
      * @return whether the two {@code Molecule} objects are equal
      */
