@@ -147,6 +147,29 @@ public class Main {
                 System.out.println(sub2.getMass());
                 System.out.println(sub2.getMoles());
 
+                Substance substance = new Substance("H2O", new Mass(new BigDecimal(BigInteger.valueOf(18L))));
+                Substance substance1 = new Substance("CO2", new Mass(new BigDecimal(BigInteger.valueOf(22L))));
+
+                SubstanceEquation seq = new SubstanceEquation("MgCl2 + H2O + CO2 -> MgCO3 + HCl");
+                seq.putReactantSubstance(substance);
+                seq.putReactantSubstance(substance1);
+
+                System.out.println(seq);
+                System.out.println("Before filling in: " + seq.getSubstanceReactants());
+                seq.fillInSubstances();
+                System.out.println("After filling in: " + seq.getSubstanceReactants());
+                System.out.println("Products: " + seq.getSubstanceProducts());
+                System.out.println("Limiting reagent: " + seq.getLimitingReagent());
+
+
+                SubstanceEquation seq1 = new SubstanceEquation("S + HNO3 -> NO2 + H2O + H2SO4");
+                seq1.fillInFromSubstance(new Substance("HNO3", new Mole(2)));
+
+                System.out.println("\n\n" + seq1);
+                System.out.println("After filling in: " + seq1.getSubstanceReactants());
+                System.out.println("Products: " + seq1.getSubstanceProducts());
+                System.out.println("Limiting reagent: " + seq1.getLimitingReagent());
+
 
             } catch (ArithmeticException | FlagException | NotationInterpretationException e) {
                 System.out.println("Something went wrong: " + e.getMessage());
