@@ -14,6 +14,12 @@ import java.math.MathContext;
  * @since 2016-3-9
  */
 public class Substance extends Molecule {
+    /**
+     * Make a {@code Substance} object using a string representation of a formula and the number of moles
+     * @param formula written representation of the formula (eg. {@code HNO3})
+     * @param moles the number of moles of this particular substance
+     * @throws NotationInterpretationException when the string cannot be interpreted as a molecule
+     */
     public Substance(String formula, Mole moles) throws NotationInterpretationException {
         super(formula);
         this.moles = moles;
@@ -21,12 +27,43 @@ public class Substance extends Molecule {
         mass = new Mass(moles.getQuantity().multiply(this.relativeFormulaMass));
     }
 
+    /**
+     * Make a {@code Substance} object using a string representation of a formula and the mass
+     * @param formula written representation of the formula (eg. {@code HNO3})
+     * @param mass the mass of this particular substance
+     * @throws NotationInterpretationException when the string cannot be interpreted as a molecule
+     */
     public Substance(String formula, Mass mass) throws NotationInterpretationException {
         super(formula);
         this.mass = mass;
 
         moles = new Mole(mass.getMassInGrams().divide(this.relativeFormulaMass, MathContext.DECIMAL64));
     }
+
+    /**
+     * Make a {@code Substance} object using a {@code Molecule} object and the number of moles
+     * @param molecule the {@code Molecule} object of the substance
+     * @param moles the number of moles of this particular substance
+     */
+    public Substance(Molecule molecule, Mole moles) {
+        super(molecule);
+        this.moles = moles;
+
+        mass = new Mass(moles.getQuantity().multiply(this.relativeFormulaMass));
+    }
+
+    /**
+     * Make a {@code Substance} object using a {@code Molecule} object and the mass
+     * @param molecule the {@code Molecule} object of the substance
+     * @param mass the mass of this particular substance
+     */
+    public Substance(Molecule molecule, Mass mass) {
+        super(molecule);
+        this.mass = mass;
+
+        moles = new Mole(mass.getMassInGrams().divide(this.relativeFormulaMass, MathContext.DECIMAL64));
+    }
+
 
     /**
      * Gets the {@link #mass} of the {@code Substance} object.
@@ -82,6 +119,14 @@ public class Substance extends Molecule {
         result = 31 * result + getMass().hashCode();
         result = 31 * result + getMoles().hashCode();
         return result;
+    }
+
+    /**
+     * Constructs a {@code Molecule} object of the same molecule, but without mass.
+     * @return a {@code Molecule} object of the same molecule, but without mass.
+     */
+    public Molecule getMolecule() {
+        return new Molecule(this);
     }
 
     /**
