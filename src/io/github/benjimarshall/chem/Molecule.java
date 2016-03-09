@@ -20,7 +20,7 @@ public class Molecule {
 
     /**
      * Make a {@code Molecule} object using a string representation of a formula
-     * @param formula written representation of the formula (eg. {@code HNO3}
+     * @param formula written representation of the formula (eg. {@code HNO3})
      * @throws NotationInterpretationException when the string cannot be interpreted as a molecule
      */
     public Molecule(String formula) throws NotationInterpretationException {
@@ -81,6 +81,21 @@ public class Molecule {
             if (entry.getValue() != 1) {
                 this.formula += entry.getValue();
             }
+        }
+    }
+
+    /**
+     * Makes a deep copy of the {@code Molecule} object
+     * @param molecule the molecule to copy
+     */
+    public Molecule(Molecule molecule) {
+        try {
+            this.formula = molecule.getFormula();
+            this.elementMap = parseFormula(formula);
+            relativeFormulaMass = molecule.getRelativeFormulaMass();
+        }
+        catch (NotationInterpretationException e) {
+            System.out.println("A highly unexpected exception has occurred, cloning a Molecule object failed");
         }
     }
 
