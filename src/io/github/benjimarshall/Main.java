@@ -154,21 +154,19 @@ public class Main {
                 seq.putReactantSubstance(substance);
                 seq.putReactantSubstance(substance1);
 
-                System.out.println(seq);
-                System.out.println("Before filling in: " + seq.getSubstanceReactants());
+                System.out.println("Before filling in: " + seq);
                 seq.fillInSubstances();
-                System.out.println("After filling in: " + seq.getSubstanceReactants());
-                System.out.println("Products: " + seq.getSubstanceProducts());
+                System.out.println("After filling in: " + seq);
                 System.out.println("Limiting reagent: " + seq.getLimitingReagent());
 
 
                 SubstanceEquation seq1 = new SubstanceEquation("S + HNO3 -> NO2 + H2O + H2SO4");
                 seq1.fillInFromSubstance(new Substance("HNO3", new Mole(2)));
 
-                System.out.println("\n\n" + seq1);
-                System.out.println("After filling in: " + seq1.getSubstanceReactants());
-                System.out.println("Products: " + seq1.getSubstanceProducts());
-                System.out.println("Limiting reagent: " + seq1.getLimitingReagent());
+                System.out.println("\n\nBefore filling in: " + seq);
+                seq.fillInSubstances();
+                System.out.println("After filling in: " + seq);
+                System.out.println("Limiting reagent: " + seq.getLimitingReagent());
 
 
             } catch (ArithmeticException | FlagException | NotationInterpretationException e) {

@@ -93,6 +93,31 @@ public class SubstanceEquation extends Equation {
     }
 
     /**
+     * Gets the {@code String} representation of the {@code SubstanceEquation} object
+     * @return the {@code String} representation of the {@code SubstanceEquation} object
+     */
+    @Override
+    public String toString() {
+        StringBuilder equationBuilder = new StringBuilder();
+        equationBuilder.append(super.toString()).append("\n");
+
+        for (Substance reactant : this.substanceReactants.values()) {
+            equationBuilder.append(reactant);
+            equationBuilder.append(" + ");
+        }
+
+        equationBuilder.replace(equationBuilder.length() - 3, equationBuilder.length(), " -> ");
+
+        for (Substance product : this.substanceProducts.values()) {
+            equationBuilder.append(product);
+            equationBuilder.append(" + ");
+        }
+
+        equationBuilder.replace(equationBuilder.length() - 3, equationBuilder.length(), "");
+        return equationBuilder.toString();
+    }
+
+    /**
     * Gets the {@link #substanceReactants} of {@code SubstanceEquation} object
     * @return the {@link #substanceReactants} of {@code SubstanceEquation} object
     */
