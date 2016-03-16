@@ -272,8 +272,8 @@ public class Mass {
     }
 
     /**
-     * Gets the exponent for the base 10, relative to grams, from a {@code Unit}
-     * @param unit {@code Unit} to find the exponent of
+     * Gets the exponent for the base 10, relative to grams, from a {@code MetricMassUnit}
+     * @param unit {@code MetricMassUnit} to find the exponent of
      * @return the exponent for the base 10, relative to grams
      */
     public static int getSIExponentFromMassUnit(MetricMassUnit unit) {
@@ -281,12 +281,12 @@ public class Mass {
     }
 
     /**
-     * A map of exponents with {@code Unit} items as keys
+     * A map of exponents with {@code MetricMassUnit} items as keys
      */
     protected static HashMap<MetricMassUnit, Integer> SI_UNIT_EXPONENTS = new HashMap<>();
 
     /**
-     * A map of {@code Unit} items of with exponents as keys
+     * A map of {@code MetricMassUnit} items of with exponents as keys
      */
     protected static HashMap<Integer, MetricMassUnit> SI_EXPONENT_UNITS = new HashMap<>();
     static {
