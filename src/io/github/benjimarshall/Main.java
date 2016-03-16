@@ -25,9 +25,9 @@ public class Main {
                 System.out.println(bd);
                 System.out.println(bd.toEngineeringString());
                 System.out.println(bd.toEngineeringString().split("[Ee]")[1].substring(1));
-                Mass m = new Mass(5632.2103, Mass.MetricUnit.ng);
+                Mass m = new Mass(5632.2103, Mass.MetricMassUnit.ng);
                 System.out.println("\n" + m.getMassInGrams());
-                System.out.println(m.getMass(Mass.MetricUnit.g).toEngineeringString());
+                System.out.println(m.getMass(Mass.MetricMassUnit.g).toEngineeringString());
                 System.out.println(m.getMass());
 
 
@@ -128,8 +128,8 @@ public class Main {
                 System.out.println("5 / 3 = " + mole.divide(mole1));
 
 
-                Mass mass = new Mass(BigDecimal.valueOf(3), Mass.MetricUnit.tonne);
-                Mass mass1 = new Mass(3, Mass.MetricUnit.g);
+                Mass mass = new Mass(BigDecimal.valueOf(3), Mass.MetricMassUnit.tonne);
+                Mass mass1 = new Mass(3, Mass.MetricMassUnit.g);
 
                 System.out.println("\n" + mass);
                 System.out.println("5 + 3 = " + mass.add(mass1));

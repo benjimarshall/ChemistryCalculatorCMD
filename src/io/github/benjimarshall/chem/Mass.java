@@ -9,7 +9,7 @@ import java.util.HashMap;
 /**
  * Metric Mass. An immutable {@code Mass} object is a wrapper for the {@link BigDecimal} class with methods to convert
  * between metric units of mass
- * @see MetricUnit
+ * @see MetricMassUnit
  */
 public class Mass {
 
@@ -18,7 +18,7 @@ public class Mass {
     }
 
     /**
-     * Makes a {@code Mass} object from a {@code BigDecimal} mass, with grams as the assumed {@code MetricUnit}
+     * Makes a {@code Mass} object from a {@code BigDecimal} mass, with grams as the assumed {@code MetricMassUnit}
      * @param mass a {@code BigDecimal} mass value
      */
     public Mass(BigDecimal mass) {
@@ -27,25 +27,25 @@ public class Mass {
     }
 
     /**
-     * Makes a {@code Mass} object from a {@code BigDecimal} mass, with provided {@code MetricUnit}
+     * Makes a {@code Mass} object from a {@code BigDecimal} mass, with provided {@code MetricMassUnit}
      * @param mass a {@code BigDecimal} mass value
-     * @param units a {@code MetricUnit} of the passed value
+     * @param units a {@code MetricMassUnit} of the passed value
      */
-    public Mass(BigDecimal mass , MetricUnit units) {
+    public Mass(BigDecimal mass , MetricMassUnit units) {
         this(mass.multiply(power(BigDecimal.TEN, getSIExponentFromMassUnit(units))));
     }
 
     /**
-     * Makes a {@code Mass} object from a {@code double} mass, with provided {@code MetricUnit}
+     * Makes a {@code Mass} object from a {@code double} mass, with provided {@code MetricMassUnit}
      * @param mass a {@code double} mass value
-     * @param units a {@code MetricUnit} of the passed value
+     * @param units a {@code MetricMassUnit} of the passed value
      */
-    public Mass(double mass, MetricUnit units) {
+    public Mass(double mass, MetricMassUnit units) {
         this(BigDecimal.valueOf(mass), units);
     }
 
     /**
-     * Makes a {@code Mass} object from a {@code double} mass, with grams as the assumed {@code MetricUnit}
+     * Makes a {@code Mass} object from a {@code double} mass, with grams as the assumed {@code MetricMassUnit}
      * @param mass a {@code double} mass value
      */
     public Mass(double mass) {
@@ -140,7 +140,7 @@ public class Mass {
      * @param targetUnit the desired units for the value
      * @return the {@code BigDecimal} object with the value of the mass with the given units
      */
-    public BigDecimal getMass(MetricUnit targetUnit) {
+    public BigDecimal getMass(MetricMassUnit targetUnit) {
         return mass.divide(power(BigDecimal.TEN, SI_UNIT_EXPONENTS.get(targetUnit)), MathContext.DECIMAL64);
     }
 
@@ -173,7 +173,7 @@ public class Mass {
     /**
      * Metric Units of Mass
      */
-    public enum MetricUnit {
+    public enum MetricMassUnit {
         /**
          * Yottagram 10<sup>24</sup>g
          */
@@ -276,44 +276,44 @@ public class Mass {
      * @param unit {@code Unit} to find the exponent of
      * @return the exponent for the base 10, relative to grams
      */
-    public static int getSIExponentFromMassUnit(MetricUnit unit) {
+    public static int getSIExponentFromMassUnit(MetricMassUnit unit) {
         return SI_UNIT_EXPONENTS.get(unit);
     }
 
     /**
      * A map of exponents with {@code Unit} items as keys
      */
-    protected static HashMap<MetricUnit, Integer> SI_UNIT_EXPONENTS = new HashMap<>();
+    protected static HashMap<MetricMassUnit, Integer> SI_UNIT_EXPONENTS = new HashMap<>();
 
     /**
      * A map of {@code Unit} items of with exponents as keys
      */
-    protected static HashMap<Integer, MetricUnit> SI_EXPONENT_UNITS = new HashMap<>();
+    protected static HashMap<Integer, MetricMassUnit> SI_EXPONENT_UNITS = new HashMap<>();
     static {
-        SI_UNIT_EXPONENTS.put(MetricUnit.Yg, 24);
-        SI_UNIT_EXPONENTS.put(MetricUnit.Zg, 21);
-        SI_UNIT_EXPONENTS.put(MetricUnit.Eg, 18);
-        SI_UNIT_EXPONENTS.put(MetricUnit.Pg, 15);
-        SI_UNIT_EXPONENTS.put(MetricUnit.Tg, 12);
-        SI_UNIT_EXPONENTS.put(MetricUnit.Gg, 9);
-        SI_UNIT_EXPONENTS.put(MetricUnit.tonne, 6);
-        SI_UNIT_EXPONENTS.put(MetricUnit.mt, 6);
-        SI_UNIT_EXPONENTS.put(MetricUnit.Mg, 6);
-        SI_UNIT_EXPONENTS.put(MetricUnit.kg, 3);
-        SI_UNIT_EXPONENTS.put(MetricUnit.g, 0);
-        SI_UNIT_EXPONENTS.put(MetricUnit.mg, -3);
-        SI_UNIT_EXPONENTS.put(MetricUnit.µg, -6);
-        SI_UNIT_EXPONENTS.put(MetricUnit.ng, -9);
-        SI_UNIT_EXPONENTS.put(MetricUnit.pg, -12);
-        SI_UNIT_EXPONENTS.put(MetricUnit.fg, -15);
-        SI_UNIT_EXPONENTS.put(MetricUnit.ag, -18);
-        SI_UNIT_EXPONENTS.put(MetricUnit.zg, -21);
-        SI_UNIT_EXPONENTS.put(MetricUnit.yg, -24);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.Yg, 24);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.Zg, 21);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.Eg, 18);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.Pg, 15);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.Tg, 12);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.Gg, 9);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.tonne, 6);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.mt, 6);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.Mg, 6);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.kg, 3);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.g, 0);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.mg, -3);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.µg, -6);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.ng, -9);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.pg, -12);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.fg, -15);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.ag, -18);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.zg, -21);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.yg, -24);
 
-        for (HashMap.Entry<MetricUnit, Integer> entry : SI_UNIT_EXPONENTS.entrySet()) {
+        for (HashMap.Entry<MetricMassUnit, Integer> entry : SI_UNIT_EXPONENTS.entrySet()) {
             SI_EXPONENT_UNITS.put(entry.getValue(), entry.getKey());
         }
-        SI_UNIT_EXPONENTS.put(MetricUnit.mt, 6);
+        SI_UNIT_EXPONENTS.put(MetricMassUnit.mt, 6);
     }
 
     // Mass in g
