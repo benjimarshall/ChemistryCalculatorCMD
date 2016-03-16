@@ -168,6 +168,15 @@ public class Main {
                 System.out.println("After filling in: " + seq);
                 System.out.println("Limiting reagent: " + seq.getLimitingReagent());
 
+                Volume vol = new Volume(2.0, Volume.MetricVolumeUnit.dm3);
+                System.out.println(vol);
+                System.out.println(vol.getVolume(Volume.MetricVolumeUnit.m3) + "\n");
+
+
+                Volume vol1 = new Volume(2.0, Volume.MetricVolumeUnit.cm3);
+                System.out.println(vol1 + "\n");
+
+                System.out.println(vol.add(vol1));
 
             } catch (ArithmeticException | FlagException | NotationInterpretationException e) {
                 System.out.println("Something went wrong: " + e.getMessage());
