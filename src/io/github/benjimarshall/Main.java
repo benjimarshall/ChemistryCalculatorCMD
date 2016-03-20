@@ -178,6 +178,14 @@ public class Main {
 
                 System.out.println(vol.add(vol1));
 
+                Solution solution = new Solution("H2O", new Mass(6), new Volume(0.5));
+                System.out.println("\n\n" + solution.getVolume() + " " + solution.getMoles() +  " " +
+                        solution.getConcentration());
+
+                Solution solution1 = new Solution("CaCO3", new Mole(3), new Volume(1.5));
+                System.out.println(solution1.getVolume() + " " + solution1.getMoles() +  " " +
+                        solution1.getConcentration());
+
             } catch (ArithmeticException | FlagException | NotationInterpretationException e) {
                 System.out.println("Something went wrong: " + e.getMessage());
             }
