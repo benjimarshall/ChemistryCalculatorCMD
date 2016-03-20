@@ -64,6 +64,16 @@ public class Substance extends Molecule {
         moles = new Mole(mass.getMassInGrams().divide(this.relativeFormulaMass, MathContext.DECIMAL64));
     }
 
+    /**
+     * Makes a deep copy of the {@code Substance} object
+     * @param substance the substance to copy
+     */
+    public Substance(Substance substance) {
+        super(substance.getMolecule());
+        mass = substance.mass;
+        moles = substance.moles;
+    }
+
 
     /**
      * Gets the {@link #mass} of the {@code Substance} object.
