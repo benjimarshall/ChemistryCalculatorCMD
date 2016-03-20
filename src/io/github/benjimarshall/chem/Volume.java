@@ -2,7 +2,6 @@ package io.github.benjimarshall.chem;
 
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.MathContext;
 import java.util.HashMap;
 
@@ -198,7 +197,6 @@ public class Volume {
         SI_UNIT_EXPONENTS.put(MetricVolumeUnit.l, 0);
     }
 
-    // Volume in dm3
     /**
      * A {@code BigDecimal} object with the value of the volume in dm<sup>3</sup>
      */
