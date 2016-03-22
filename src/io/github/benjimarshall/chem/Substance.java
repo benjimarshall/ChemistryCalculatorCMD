@@ -5,8 +5,8 @@ import java.math.MathContext;
 
 /**
  * Chemical Substance, a {@code Molecule} object with mass. The {@code Substance} class extends the {@link Molecule}
- * class. A {@code Molecule} object consists of its constituent {@code Element} objects, their ratios, each
- * {@code Molecule}'s relative formula mass, and a mass part consisting of a {@link Mass} object and a {@link Mole}
+ * class. A {@code Substance} object consists of its constituent {@code Element} objects, their ratios, each
+ * {@code Substance}'s relative formula mass, and a mass part consisting of a {@link Mass} object and a {@link Mole}
  * object.
  *
  *
@@ -74,23 +74,6 @@ public class Substance extends Molecule {
         moles = substance.moles;
     }
 
-
-    /**
-     * Gets the {@link #mass} of the {@code Substance} object.
-     * @return the {@link #mass} of the {@code Substance} object.
-     */
-    public Mass getMass() {
-        return mass;
-    }
-
-    /**
-     * Gets the number of {@link #moles} of the {@code Substance} object.
-     * @return the number of {@link #moles} of the {@code Substance} object.
-     */
-    public Mole getMoles() {
-        return moles;
-    }
-
     /**
      * Gets a {@link String} representation of the {@code Substance} object, as the number of {@link #moles} as a string
      * with the {@code Molecule} part as a string. (Eg. {@code 3mol of NH3})
@@ -137,6 +120,22 @@ public class Substance extends Molecule {
      */
     public Molecule getMolecule() {
         return new Molecule(this);
+    }
+
+    /**
+     * Gets the {@link #mass} of the {@code Substance} object.
+     * @return the {@link #mass} of the {@code Substance} object.
+     */
+    public Mass getMass() {
+        return mass;
+    }
+
+    /**
+     * Gets the number of {@link #moles} of the {@code Substance} object.
+     * @return the number of {@link #moles} of the {@code Substance} object.
+     */
+    public Mole getMoles() {
+        return moles;
     }
 
     /**
