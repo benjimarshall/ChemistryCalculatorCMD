@@ -186,6 +186,14 @@ public class Main {
                 System.out.println(solution1.getVolume() + " " + solution1.getMoles() +  " " +
                         solution1.getConcentration());
 
+                System.out.println("\n");
+                System.out.println(Titration.doTitration(solution1, new Molecule("HNO3"), vol,
+                        Fraction.getFraction(1, 2)));
+
+                System.out.println("\n");
+                System.out.println(Titration.doTitration(solution1, "HNO3", new Concentration(12),
+                        Fraction.getFraction(1, 2)));
+
             } catch (ArithmeticException | FlagException | NotationInterpretationException e) {
                 System.out.println("Something went wrong: " + e.getMessage());
             }
