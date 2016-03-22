@@ -233,14 +233,23 @@ public class Molecule {
         return s.replaceAll("[^\\(]", "").length() == s.replaceAll("[^\\)]", "").length();
     }
 
-    private Molecule makeEmpiricalFormula() {
+    private String makeEmpiricalFormula() {
         int divisor = AlgebraicEquation.gcd(new ArrayList<>(this.elementMap.values()));
         HashMap<Element, Integer> empiricalElementMap = new HashMap<>();
+
         for (HashMap.Entry<Element, Integer> element : this.elementMap.entrySet()) {
             empiricalElementMap.put(element.getKey(), (element.getValue() / divisor));
         }
 
-        return new Molecule(empiricalElementMap);
+        StringBuilder empiricalForumla = new StringBuilder();
+        for (HashMap.Entry<Element, Integer> element : empiricalElementMap.entrySet()) {
+            empiricalForumla.append(element.getKey());
+            if (element.getValue() != 1) {
+                empiricalForumla.append(element.getValue());
+            }
+        }
+
+        return empiricalForumla.toString();
     }
 
     /**
@@ -331,7 +340,7 @@ public class Molecule {
         return relativeFormulaMass;
     }
 
-    public Molecule getEmpiricalFormula() {
+    public String getEmpiricalFormula() {
         return empiricalFormula;
     }
 
@@ -369,6 +378,6 @@ public class Molecule {
      * The {@code Molecule} object's empirical formula; the simplest ratio of atoms. For example: {@code C2H6} has an
      * empirical formula of {@code CH3}
      */
-    protected Molecule empiricalFormula;
+    protected String empiricalFormula;
 }
 
