@@ -80,6 +80,11 @@ public class Solution extends Substance {
         this.volume = calculateVolume(getMoles(), concentration);
     }
 
+    @Override
+    public String toString() {
+        return super.toString() + " in " + volume.toString() + " at " + concentration.toString();
+    }
+
     public Volume getVolume() {
         return volume;
     }
