@@ -4,9 +4,13 @@ package io.github.benjimarshall.chem;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
+/**
+ * Concentration. An immutable {@code Concentration} object is a wrapper for the {@link BigDecimal} class.
+ */
 public class Concentration {
     /**
-     * Makes a {@code Concentration} object from a {@code BigDecimal} concentration, with moldm<sup>-3</sup> as the assumed unit
+     * Makes a {@code Concentration} object from a {@code BigDecimal} concentration, with moldm<sup>-3</sup> as the
+     * assumed unit
      * @param concentration a {@code BigDecimal} concentration value
      */
     public Concentration(BigDecimal concentration) {
@@ -14,7 +18,8 @@ public class Concentration {
     }
 
     /**
-     * Makes a {@code Concentration} object from a {@code double} concentration, with moldm<sup>-3</sup> as the assumed unit
+     * Makes a {@code Concentration} object from a {@code double} concentration, with moldm<sup>-3</sup> as the
+     * assumed unit
      * @param concentration a {@code double} concentration value
      */
     public Concentration(double concentration) {
@@ -22,8 +27,8 @@ public class Concentration {
     }
 
     /**
-     * Add this {@code Concentration} object to the {@code Concentration} parameter, and return a new {@code Concentration} object of the
-     * resultant value
+     * Add this {@code Concentration} object to the {@code Concentration} parameter, and return a new
+     * {@code Concentration} object of the resultant value
      * @param concentration the {@code Concentration} object to add to this object
      * @return a new {@code Concentration} object of the resultant value
      */
@@ -32,8 +37,8 @@ public class Concentration {
     }
 
     /**
-     * Subtract the {@code Concentration} parameter from this {@code Concentration} object, and return a new {@code Concentration} object of
-     * the resultant value
+     * Subtract the {@code Concentration} parameter from this {@code Concentration} object, and return a new
+     * {@code Concentration} object of the resultant value
      * @param concentration the {@code Concentration} object to subtract from this object
      * @return a new {@code Concentration} object of the resultant value
      */
@@ -42,8 +47,8 @@ public class Concentration {
     }
 
     /**
-     * Multiply this {@code Concentration} object by the {@code Concentration} parameter, and return a new {@code Concentration} object of the
-     * resultant value
+     * Multiply this {@code Concentration} object by the {@code Concentration} parameter, and return a new
+     * {@code Concentration} object of the resultant value
      * @param concentration the {@code Concentration} object to multiply by this object
      * @return a new {@code Concentration} object of the resultant value
      */
@@ -52,8 +57,8 @@ public class Concentration {
     }
 
     /**
-     * Divide this {@code Concentration} object by the {@code Concentration} parameter, and return a new {@code Concentration} object of the
-     * resultant value
+     * Divide this {@code Concentration} object by the {@code Concentration} parameter, and return a new
+     * {@code Concentration} object of the resultant value
      * @param concentration the {@code Concentration} object to divide this object by
      * @return a new {@code Concentration} object of the resultant value
      */
