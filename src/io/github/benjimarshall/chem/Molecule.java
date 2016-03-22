@@ -55,6 +55,8 @@ public class Molecule {
         } catch (IndexOutOfBoundsException e) {
             throw new NotationInterpretationException("Capital letter expected after number");
         }
+
+        this.empiricalFormula = makeEmpiricalFormula();
     }
 
     /**
@@ -231,11 +233,7 @@ public class Molecule {
         return s.replaceAll("[^\\(]", "").length() == s.replaceAll("[^\\)]", "").length();
     }
 
-    /**
-     * Generates the Empirical Formula of the {@code Molecule} object; the simplest ratio of atoms
-     * @return the Empirical Formula of the {@code Molecule} object
-     */
-    public Molecule getEmpiricalFormula() {
+    private Molecule makeEmpiricalFormula() {
         int divisor = AlgebraicEquation.gcd(new ArrayList<>(this.elementMap.values()));
         HashMap<Element, Integer> empiricalElementMap = new HashMap<>();
         for (HashMap.Entry<Element, Integer> element : this.elementMap.entrySet()) {
@@ -333,6 +331,10 @@ public class Molecule {
         return relativeFormulaMass;
     }
 
+    public Molecule getEmpiricalFormula() {
+        return empiricalFormula;
+    }
+
     /**
      * A regex pattern of the accepted letters and symbols in the {@code String} representation a {@code Molecule}
      * object.
@@ -362,5 +364,11 @@ public class Molecule {
      * {@code 63.0}
      */
     protected BigDecimal relativeFormulaMass;
+
+    /**
+     * The {@code Molecule} object's empirical formula; the simplest ratio of atoms. For example: {@code C2H6} has an
+     * empirical formula of {@code CH3}
+     */
+    protected Molecule empiricalFormula;
 }
 
